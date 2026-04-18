@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stream Allotment Tool — Upload & Download</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #faf8f3;
+    --ruled: #e8e2d5;
+    --accent: #fbbf24;
+    --green: #16a34a;
+    --red: #dc2626;
+    --blue: #2563eb;
+    --shadow: rgba(26,26,46,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    background-image:
+      repeating-linear-gradient(transparent, transparent 27px, var(--ruled) 27px, var(--ruled) 28px),
+      linear-gradient(90deg, transparent 59px, #f0e8dc 59px, #f0e8dc 61px, transparent 61px);
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    padding-bottom: 60px;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--ink);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.03) 10px, rgba(255,255,255,.03) 20px);
+  }
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 44px 24px 36px;
+    position: relative;
+  }
+  .school-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 40px;
+    padding: 6px 18px 6px 10px;
+    margin-bottom: 20px;
+  }
+  .badge-dot { width: 10px; height: 10px; background: #f59e0b; border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .school-badge span { color: rgba(255,255,255,.75); font-size: 12px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+  .header h1 { font-family: 'Playfair Display', serif; font-size: clamp(24px,4vw,42px); color: #fff; line-height: 1.1; font-weight: 900; }
+  .header h1 em { font-style: italic; color: #fbbf24; }
+  .header-sub { color: rgba(255,255,255,.55); margin-top: 10px; font-size: 14px; font-weight: 300; }
+
+  /* MAIN WRAP */
+  .main { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+  /* CRITERIA CARD */
+  .criteria-card {
+    background: #fff;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 8px 40px var(--shadow);
+    border-top: 4px solid var(--accent);
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+  .criteria-header {
+    background: var(--ink);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .criteria-header h3 { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: .04em; }
+  .criteria-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .criteria-table thead th {
+    background: #f8f7f4;
+    padding: 10px 16px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #666;
+    border-bottom: 1px solid var(--ruled);
+  }
+  .criteria-table thead th:first-child { text-align: left; }
+  .criteria-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0ece4;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .criteria-table tbody td:first-child { font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 13px; text-align: left; }
+  .criteria-table tbody tr:last-child td { border-bottom: none; }
+  .cval { color: var(--ink); }
+  .cna  { color: #ccc; }
+  .cany { color: #db2777; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; }
+  .s-pcm td:first-child  { border-left: 3px solid #2563eb; }
+  .s-pcb td:first-child  { border-left: 3px solid #16a34a; }
+  .s-cwm td:first-child  { border-left: 3px solid #d97706; }
+  .s-cwom td:first-child { border-left: 3px solid #7c3aed; }
+  .s-hum td:first-child  { border-left: 3px solid #db2777; }
+
+  /* UPLOAD SECTION */
+  .section-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px var(--shadow);
+    border: 1px solid var(--ruled);
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .section-title {
+    background: var(--ink);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: .04em;
+  }
+  .section-body { padding: 28px; }
+
+  /* DROP ZONE */
+  .drop-zone {
+    border: 2.5px dashed var(--ruled);
+    border-radius: 14px;
+    padding: 44px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    position: relative;
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--accent);
+    background: #fffbeb;
+  }
+  .drop-zone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .drop-icon { font-size: 40px; margin-bottom: 12px; }
+  .drop-title { font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+  .drop-sub { font-size: 13px; color: #999; }
+  .drop-sub strong { color: var(--ink); }
+
+  /* COLUMN MAPPING */
+  .mapping-section { display: none; }
+  .mapping-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .map-field label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #888; display: block; margin-bottom: 6px; }
+  .map-field select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--ruled);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--paper);
+    outline: none;
+    cursor: pointer;
+    transition: border-color .2s;
+  }
+  .map-field select:focus { border-color: var(--ink); }
+  .map-hint {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: #1d4ed8;
+    margin-top: 14px;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: transform .15s, box-shadow .15s;
+    letter-spacing: .02em;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,.15); }
+  .btn:active { transform: translateY(0); }
+  .btn-primary { background: var(--ink); color: #fff; }
+  .btn-success { background: #16a34a; color: #fff; }
+  .btn-accent  { background: var(--accent); color: var(--ink); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .action-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; align-items: center; }
+
+  /* RESULTS TABLE */
+  .results-section { display: none; }
+  .stats-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .stat-pill {
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    border: 1.5px solid;
+  }
+  .stat-total  { background: #f8f7f4; border-color: var(--ruled); color: var(--ink); }
+  .stat-pcm    { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
+  .stat-pcb    { background: #f0fdf4; border-color: #86efac; color: #15803d; }
+  .stat-cwm    { background: #fffbeb; border-color: #fcd34d; color: #b45309; }
+  .stat-cwom   { background: #f5f3ff; border-color: #c4b5fd; color: #6d28d9; }
+  .stat-hum    { background: #fdf2f8; border-color: #f9a8d4; color: #be185d; }
+
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--ruled); }
+  table.result-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.result-table thead th {
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  table.result-table tbody td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #f0ece4;
+    white-space: nowrap;
+  }
+  table.result-table tbody tr:last-child td { border-bottom: none; }
+  table.result-table tbody tr:hover td { background: #fafaf8; }
+  .stream-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+  .b-pcm  { background: #eff6ff; color: #1d4ed8; border: 1px solid #93c5fd; }
+  .b-pcb  { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+  .b-cwm  { background: #fffbeb; color: #b45309; border: 1px solid #fcd34d; }
+  .b-cwom { background: #f5f3ff; color: #6d28d9; border: 1px solid #c4b5fd; }
+  .b-hum  { background: #fdf2f8; color: #be185d; border: 1px solid #f9a8d4; }
+
+  .mark-num { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; }
+  .mark-na  { color: #ccc; font-family: 'Space Mono', monospace; font-size: 12px; }
+
+  /* SEARCH */
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .search-bar input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 16px;
+    border: 1.5px solid var(--ruled);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper);
+    outline: none;
+    transition: border-color .2s;
+  }
+  .search-bar input:focus { border-color: var(--ink); }
+
+  /* MESSAGES */
+  .msg { padding: 14px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; margin-top: 14px; display: none; }
+  .msg-error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+  .msg-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+
+  .pencil-note { font-family: 'Space Mono', monospace; font-size: 11px; color: #b0a898; margin-top: 10px; display: flex; align-items: center; gap: 6px; }
+  .pencil-note::before { content: '✏️'; }
+
+  .file-info {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: #166534;
+    font-weight: 500;
+  }
+  .file-info .fi-icon { font-size: 22px; }
+
+  @media(max-width:600px) {
+    .section-body { padding: 18px; }
+    .drop-zone { padding: 28px 16px; }
+    .mapping-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="school-badge">
+      <span class="badge-dot"></span>
+      <span>Session 2026–27 · Class XI Stream Allotment Tool</span>
+    </div>
+    <h1>Stream Allotment<br><em>Upload & Download</em> Tool</h1>
+    <p class="header-sub">Upload your marks Excel sheet → Auto-compute streams → Download results</p>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- CRITERIA -->
+  <div class="criteria-card">
+    <div class="criteria-header">
+      <span>📊</span>
+      <h3>Stream Allotment Criteria</h3>
+    </div>
+    <table class="criteria-table">
+      <thead>
+        <tr>
+          <th>Stream</th>
+          <th>Science</th>
+          <th>Maths Std (041)</th>
+          <th>Maths Basic (241)</th>
+          <th>English</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="s-pcm">
+          <td>⚗️ PCM</td>
+          <td class="cval">≥ 71</td>
+          <td class="cval">≥ 71</td>
+          <td class="cna">—</td>
+          <td class="cval">≥ 51</td>
+        </tr>
+        <tr class="s-pcb">
+          <td>🌿 PCB (Maths Std)</td>
+          <td class="cval">≥ 71</td>
+          <td class="cval">≥ 61</td>
+          <td class="cna">—</td>
+          <td class="cval">≥ 51</td>
+        </tr>
+        <tr class="s-pcb">
+          <td>🌿 PCB (Maths Basic)</td>
+          <td class="cval">≥ 71</td>
+          <td class="cna">—</td>
+          <td class="cval">≥ 71</td>
+          <td class="cval">≥ 51</td>
+        </tr>
+        <tr class="s-cwm">
+          <td>📈 Commerce with Maths</td>
+          <td class="cna">N/A</td>
+          <td class="cval">≥ 71</td>
+          <td class="cna">—</td>
+          <td class="cval">≥ 51</td>
+        </tr>
+        <tr class="s-cwom">
+          <td>💼 Commerce without Maths</td>
+          <td class="cna">N/A</td>
+          <td class="cval">≥ 51</td>
+          <td class="cval">≥ 61</td>
+          <td class="cval">≥ 51</td>
+        </tr>
+        <tr class="s-hum">
+          <td>📚 Humanities</td>
+          <td class="cany" colspan="3">No Restriction</td>
+          <td class="cany">No Restriction</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- STEP 1: UPLOAD -->
+  <div class="section-card">
+    <div class="section-title">
+      <span>📁</span> STEP 1 — Upload Marks Excel Sheet
+    </div>
+    <div class="section-body">
+      <div class="drop-zone" id="dropZone">
+        <input type="file" id="fileInput" accept=".xlsx,.xls" />
+        <div class="drop-icon">📊</div>
+        <div class="drop-title">Drop your Excel file here</div>
+        <div class="drop-sub">or click to browse &nbsp;·&nbsp; <strong>.xlsx / .xls</strong> supported</div>
+      </div>
+      <div class="file-info" id="fileInfo">
+        <span class="fi-icon">✅</span>
+        <span id="fileInfoText">File loaded</span>
+      </div>
+      <div class="msg msg-error" id="uploadError"></div>
+      <p class="pencil-note">Column names are detected automatically — you can re-map them below if needed</p>
+    </div>
+  </div>
+
+  <!-- STEP 2: MAP COLUMNS -->
+  <div class="section-card mapping-section" id="mappingSection">
+    <div class="section-title">
+      <span>🔗</span> STEP 2 — Confirm Column Mapping
+    </div>
+    <div class="section-body">
+      <div class="map-hint">
+        ℹ️ Columns detected from your file are shown below. Adjust if any column is mapped to the wrong subject.
+      </div>
+      <div class="mapping-grid">
+        <div class="map-field">
+          <label>Roll Number</label>
+          <select id="mapRoll"></select>
+        </div>
+        <div class="map-field">
+          <label>Student Name</label>
+          <select id="mapName"></select>
+        </div>
+        <div class="map-field">
+          <label>Gender <span style="font-weight:400;color:#bbb">(optional)</span></label>
+          <select id="mapGender"></select>
+        </div>
+        <div class="map-field">
+          <label>Science</label>
+          <select id="mapScience"></select>
+        </div>
+        <div class="map-field">
+          <label>Maths Standard (041)</label>
+          <select id="mapMathsStd"></select>
+        </div>
+        <div class="map-field">
+          <label>Maths Basic (241)</label>
+          <select id="mapMathsBasic"></select>
+        </div>
+        <div class="map-field">
+          <label>English</label>
+          <select id="mapEnglish"></select>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn btn-primary" onclick="processData()">⚙️ Compute Streams</button>
+      </div>
+      <div class="msg msg-error" id="mapError"></div>
+    </div>
+  </div>
+
+  <!-- STEP 3: RESULTS -->
+  <div class="section-card results-section" id="resultsSection">
+    <div class="section-title">
+      <span>✅</span> STEP 3 — Results
+    </div>
+    <div class="section-body">
+      <div class="stats-row" id="statsRow"></div>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍  Search by name or roll number…" oninput="filterTable()" />
+        <button class="btn btn-success" onclick="downloadExcel()">⬇️ Download Excel</button>
+      </div>
+      <div class="table-wrap">
+        <table class="result-table" id="resultTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Roll No</th>
+              <th>Name</th>
+              <th>Gender</th>
+              <th>Science</th>
+              <th>Maths Std</th>
+              <th>Maths Basic</th>
+              <th>English</th>
+              <th>Allotted Stream</th>
+            </tr>
+          </thead>
+          <tbody id="resultBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let rawData = [];       // array of row objects from Excel
+let columns = [];       // column names
+let processedRows = []; // final computed rows
+
+// ─── Criteria ────────────────────────────────────────────────────────────────
+function computeStream(sci, ms, mb, eng) {
+  const n = v => (v !== null && v !== undefined && v !== '' && !isNaN(v)) ? parseFloat(v) : null;
+  sci = n(sci); ms = n(ms); mb = n(mb); eng = n(eng);
+
+  const pcm  = sci !== null && ms  !== null && eng !== null && sci >= 71 && ms  >= 71 && eng >= 51;
+  const pcbS = sci !== null && ms  !== null && eng !== null && sci >= 71 && ms  >= 61 && eng >= 51;
+  const pcbB = sci !== null && mb  !== null && eng !== null && sci >= 71 && mb  >= 71 && eng >= 51;
+  const cwm  =                 ms  !== null && eng !== null &&              ms  >= 71 && eng >= 51;
+  const cwom = eng !== null && eng >= 51 && ((ms !== null && ms >= 51) || (mb !== null && mb >= 61));
+
+  if (pcm)        return 'PCM';
+  if (pcbS||pcbB) return 'PCB';
+  if (cwm)        return 'Commerce with Maths';
+  if (cwom)       return 'Commerce without Maths';
+  return 'Humanities';
+}
+
+// ─── File Upload ──────────────────────────────────────────────────────────────
+const dropZone  = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+fileInput.addEventListener('change', e => {
+  if (e.target.files[0]) handleFile(e.target.files[0]);
+});
+
+function handleFile(file) {
+  const err = document.getElementById('uploadError');
+  err.style.display = 'none';
+  if (!file.name.match(/\.(xlsx|xls)$/i)) {
+    showMsg('uploadError', 'Please upload an .xlsx or .xls file.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb   = XLSX.read(e.target.result, { type: 'array' });
+      const ws   = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+      if (!json.length) { showMsg('uploadError', 'The sheet appears to be empty.'); return; }
+
+      rawData = json;
+      columns = Object.keys(json[0]);
+
+      // Show file info
+      const fi = document.getElementById('fileInfo');
+      document.getElementById('fileInfoText').textContent = `"${file.name}" loaded — ${json.length} rows, ${columns.length} columns detected`;
+      fi.style.display = 'flex';
+
+      populateMappingDropdowns();
+      document.getElementById('mappingSection').style.display = 'block';
+      document.getElementById('resultsSection').style.display = 'none';
+      document.getElementById('mappingSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch(ex) {
+      showMsg('uploadError', 'Could not read the file. Make sure it is a valid Excel file.');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ─── Column Mapping ───────────────────────────────────────────────────────────
+const FIELD_HINTS = {
+  mapRoll:      ['roll', 'rollno', 'roll no', 'roll_no', 'rno'],
+  mapName:      ['name', 'student', 'student name', 'sname'],
+  mapGender:    ['gender', 'sex', 'gen'],
+  mapScience:   ['science', 'sci'],
+  mapMathsStd:  ['maths std', 'mathsstd', 'maths_std', 'math std', 'standard', 'maths standard', '041'],
+  mapMathsBasic:['maths basic', 'mathsbasic', 'maths_basic', 'math basic', 'basic', '241'],
+  mapEnglish:   ['english', 'eng', 'language', 'englan', 'lit'],
+};
+
+function populateMappingDropdowns() {
+  const noneOpt = col => `<option value="">(not in file)</option>` + columns.map(c => `<option value="${c}">${c}</option>`).join('');
+  const allOpts = col => columns.map(c => `<option value="${c}">${c}</option>`).join('');
+
+  ['mapRoll','mapName','mapGender','mapScience','mapMathsStd','mapMathsBasic','mapEnglish'].forEach(id => {
+    const sel = document.getElementById(id);
+    const isOptional = id === 'mapGender';
+    sel.innerHTML = (isOptional ? '<option value="">(not mapped)</option>' : '') + columns.map(c => `<option value="${c}">${c}</option>`).join('');
+    // auto-detect
+    const hints = FIELD_HINTS[id];
+    const found = columns.find(c => hints.some(h => c.toLowerCase().replace(/[\s_\n]/g,'').includes(h.replace(/[\s_]/g,''))));
+    if (found) sel.value = found;
+    else if (!isOptional && columns.length) sel.value = columns[0];
+  });
+}
+
+// ─── Process ──────────────────────────────────────────────────────────────────
+function processData() {
+  const roll    = document.getElementById('mapRoll').value;
+  const name    = document.getElementById('mapName').value;
+  const gender  = document.getElementById('mapGender').value;
+  const science = document.getElementById('mapScience').value;
+  const mathsS  = document.getElementById('mapMathsStd').value;
+  const mathsB  = document.getElementById('mapMathsBasic').value;
+  const english = document.getElementById('mapEnglish').value;
+
+  if (!roll || !name || !science || !english) {
+    showMsg('mapError', 'Please map Roll No, Name, Science, and English columns.');
+    return;
+  }
+  document.getElementById('mapError').style.display = 'none';
+
+  processedRows = rawData
+    .map((row, i) => {
+      const r = v => row[v] !== undefined && row[v] !== '' ? row[v] : null;
+      const rollVal = r(roll);
+      if (!rollVal) return null; // skip empty rows
+      return {
+        idx:      i + 1,
+        roll:     rollVal,
+        name:     r(name) || '',
+        gender:   gender ? (r(gender) || '') : '',
+        science:  r(science),
+        mathsStd: mathsS  ? r(mathsS)  : null,
+        mathsBasic: mathsB ? r(mathsB) : null,
+        english:  r(english),
+        stream:   computeStream(r(science), mathsS ? r(mathsS) : null, mathsB ? r(mathsB) : null, r(english)),
+      };
+    })
+    .filter(Boolean);
+
+  renderResults();
+  document.getElementById('resultsSection').style.display = 'block';
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+const streamMeta = {
+  'PCM':                    { cls: 'b-pcm',  icon: '⚗️' },
+  'PCB':                    { cls: 'b-pcb',  icon: '🌿' },
+  'Commerce with Maths':    { cls: 'b-cwm',  icon: '📈' },
+  'Commerce without Maths': { cls: 'b-cwom', icon: '💼' },
+  'Humanities':             { cls: 'b-hum',  icon: '📚' },
+};
+
+function fmt(v) {
+  if (v === null || v === undefined || v === '') return '<span class="mark-na">N/A</span>';
+  return `<span class="mark-num">${parseFloat(v)}</span>`;
+}
+
+function renderResults(filter = '') {
+  const counts = { PCM:0, PCB:0, 'Commerce with Maths':0, 'Commerce without Maths':0, Humanities:0 };
+  processedRows.forEach(r => counts[r.stream] = (counts[r.stream]||0) + 1);
+
+  // Stats
+  const sr = document.getElementById('statsRow');
+  sr.innerHTML = `
+    <span class="stat-pill stat-total">Total: ${processedRows.length}</span>
+    <span class="stat-pill stat-pcm">⚗️ PCM: ${counts['PCM']}</span>
+    <span class="stat-pill stat-pcb">🌿 PCB: ${counts['PCB']}</span>
+    <span class="stat-pill stat-cwm">📈 Comm+Maths: ${counts['Commerce with Maths']}</span>
+    <span class="stat-pill stat-cwom">💼 Commerce: ${counts['Commerce without Maths']}</span>
+    <span class="stat-pill stat-hum">📚 Humanities: ${counts['Humanities']}</span>
+  `;
+
+  const q = filter.toLowerCase();
+  const filtered = processedRows.filter(r =>
+    !q || String(r.roll).toLowerCase().includes(q) || r.name.toLowerCase().includes(q)
+  );
+
+  const tbody = document.getElementById('resultBody');
+  tbody.innerHTML = filtered.map((r, i) => {
+    const m = streamMeta[r.stream] || streamMeta['Humanities'];
+    return `<tr>
+      <td style="color:#bbb;font-size:11px">${i+1}</td>
+      <td style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700">${r.roll}</td>
+      <td style="font-weight:600">${r.name}</td>
+      <td style="color:#888;font-size:12px">${r.gender || '—'}</td>
+      <td>${fmt(r.science)}</td>
+      <td>${fmt(r.mathsStd)}</td>
+      <td>${fmt(r.mathsBasic)}</td>
+      <td>${fmt(r.english)}</td>
+      <td><span class="stream-badge ${m.cls}">${m.icon} ${r.stream}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable() {
+  renderResults(document.getElementById('searchInput').value);
+}
+
+// ─── Download Excel ────────────────────────────────────────────────────────────
+function downloadExcel() {
+  if (!processedRows.length) return;
+
+  const streamColors = {
+    'PCM':                    { bg: 'DBEAFE', fg: '1E3A8A' },
+    'PCB':                    { bg: 'DCFCE7', fg: '14532D' },
+    'Commerce with Maths':    { bg: 'FEF3C7', fg: '78350F' },
+    'Commerce without Maths': { bg: 'EDE9FE', fg: '4C1D95' },
+    'Humanities':             { bg: 'FCE7F3', fg: '831843' },
+  };
+
+  const wb = XLSX.utils.book_new();
+
+  // Build aoa (array of arrays)
+  const headers = ['ROLL NO', 'NAME', 'GENDER', 'SCIENCE', 'MATHS STD', 'MATHS BASIC', 'ENGLISH', 'ALLOTTED STREAM'];
+  const aoa = [headers, ...processedRows.map(r => [
+    r.roll, r.name, r.gender,
+    r.science !== null ? parseFloat(r.science) : '',
+    r.mathsStd !== null ? parseFloat(r.mathsStd) : '',
+    r.mathsBasic !== null ? parseFloat(r.mathsBasic) : '',
+    r.english !== null ? parseFloat(r.english) : '',
+    r.stream
+  ])];
+
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+  // Column widths
+  ws['!cols'] = [
+    { wch: 14 }, { wch: 28 }, { wch: 10 },
+    { wch: 10 }, { wch: 12 }, { wch: 13 }, { wch: 10 }, { wch: 26 }
+  ];
+
+  // Style header row
+  const headerStyle = {
+    font: { bold: true, color: { rgb: 'FFFFFF' } },
+    fill: { fgColor: { rgb: '1A1A2E' } },
+    alignment: { horizontal: 'center', vertical: 'center' },
+  };
+  headers.forEach((_, ci) => {
+    const cellRef = XLSX.utils.encode_cell({ r: 0, c: ci });
+    if (!ws[cellRef]) ws[cellRef] = { v: headers[ci] };
+    ws[cellRef].s = headerStyle;
+  });
+
+  // Style data rows
+  processedRows.forEach((row, ri) => {
+    const excelRow = ri + 1; // 0=header
+    const sc = streamColors[row.stream] || { bg: 'F3F4F6', fg: '374151' };
+    for (let ci = 0; ci < 8; ci++) {
+      const cellRef = XLSX.utils.encode_cell({ r: excelRow, c: ci });
+      if (!ws[cellRef]) ws[cellRef] = { v: '' };
+      ws[cellRef].s = {
+        alignment: { vertical: 'center', horizontal: ci === 1 ? 'left' : 'center' },
+        border: {
+          bottom: { style: 'thin', color: { rgb: 'E5E7EB' } },
+        }
+      };
+    }
+    // Stream column gets colored
+    const streamCell = XLSX.utils.encode_cell({ r: excelRow, c: 7 });
+    ws[streamCell].s = {
+      font:      { bold: true, color: { rgb: sc.fg } },
+      fill:      { fgColor: { rgb: sc.bg } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border:    { bottom: { style: 'thin', color: { rgb: 'E5E7EB' } } },
+    };
+  });
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Stream Allotment');
+
+  // Summary sheet
+  const counts = { PCM:0, PCB:0, 'Commerce with Maths':0, 'Commerce without Maths':0, Humanities:0 };
+  processedRows.forEach(r => counts[r.stream]++);
+  const summaryAoa = [
+    ['STREAM', 'COUNT'],
+    ...Object.entries(counts),
+    ['TOTAL', processedRows.length],
+  ];
+  const ws2 = XLSX.utils.aoa_to_sheet(summaryAoa);
+  ws2['!cols'] = [{ wch: 26 }, { wch: 10 }];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+
+  XLSX.writeFile(wb, 'StreamAllotment_Result.xlsx');
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function showMsg(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+</script>
+</body>
+</html>
