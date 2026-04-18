@@ -761,12 +761,16 @@ const computeStreams = s => {
   const pcmOk = sci >= 71 && ms >= 71 && eng >= 51;
   if (pcmOk) eligible.push('PCM');
 
-  // PCB: Science ≥61, Maths Basic ≥71, Eng ≥51
-  const pcbOk = sci >= 61 && mb >= 71 && eng >= 51;
+  // 2. PCB: Science ≥ 71, Maths Basic ≥ 71, English ≥ 51
+  // (Corrected: Science must be ≥ 71)
+  const pcbOk = sci >= 71 && eng >= 51 && (
+    (mb !== null && mb >= 71) || 
+    (ms !== null && ms >= 61)
+	);
   if (pcbOk) eligible.push('PCB');
 
   // Commerce with Maths: Maths Std ≥71, Eng ≥51 (NA for science)
-  const cwmOk = ms >= 71 && eng >= 51;
+  const cwmOk = (ms !== null && ms >= 71) && eng >= 51;
   if (cwmOk && !eligible.includes('Commerce with Maths')) eligible.push('Commerce with Maths');
 
   // Commerce without Maths: Maths Std ≥51 OR Maths Basic ≥61, Eng ≥51
