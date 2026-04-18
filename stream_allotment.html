@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stream Allotment Portal — Class XI 2025-26</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #faf8f3;
+    --ruled: #e8e2d5;
+    --pcm-color: #2563eb;
+    --pcb-color: #16a34a;
+    --comm-m-color: #d97706;
+    --comm-color: #7c3aed;
+    --hum-color: #db2777;
+    --accent: #c0392b;
+    --gold: #b8860b;
+    --shadow: rgba(26,26,46,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    background-image: 
+      repeating-linear-gradient(transparent, transparent 27px, var(--ruled) 27px, var(--ruled) 28px),
+      linear-gradient(90deg, transparent 59px, #f0e8dc 59px, #f0e8dc 61px, transparent 61px);
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    padding: 0 0 60px;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--ink);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.03) 10px, rgba(255,255,255,.03) 20px);
+  }
+  .header-inner {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 44px 24px 36px;
+    position: relative;
+  }
+  .school-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 40px;
+    padding: 6px 18px 6px 10px;
+    margin-bottom: 20px;
+  }
+  .badge-dot {
+    width: 10px; height: 10px;
+    background: #f59e0b;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .school-badge span {
+    color: rgba(255,255,255,.75);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 5vw, 48px);
+    color: #fff;
+    line-height: 1.1;
+    font-weight: 900;
+    letter-spacing: -.01em;
+  }
+  .header h1 em {
+    font-style: italic;
+    color: #fbbf24;
+  }
+  .header-sub {
+    color: rgba(255,255,255,.55);
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 300;
+  }
+  .criteria-strip {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .crit-pill {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    border: 1px solid;
+  }
+  .crit-pcm   { background: rgba(37,99,235,.25); border-color: rgba(37,99,235,.5); color: #93c5fd; }
+  .crit-pcb   { background: rgba(22,163,74,.25); border-color: rgba(22,163,74,.5); color: #86efac; }
+  .crit-comwm { background: rgba(217,119,6,.25); border-color: rgba(217,119,6,.5); color: #fcd34d; }
+  .crit-com   { background: rgba(124,58,237,.25); border-color: rgba(124,58,237,.5); color: #c4b5fd; }
+  .crit-hum   { background: rgba(219,39,119,.25); border-color: rgba(219,39,119,.5); color: #fbcfe8; }
+
+  /* ── LOOKUP CARD ── */
+  .lookup-wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .lookup-card {
+    background: #fff;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 8px 40px var(--shadow);
+    padding: 36px 40px;
+    border-top: 4px solid #fbbf24;
+    position: relative;
+  }
+  .lookup-card::before {
+    content: 'ROLL NO. LOOKUP';
+    position: absolute;
+    top: -1px; right: 24px;
+    background: #fbbf24;
+    color: var(--ink);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    padding: 4px 12px;
+    border-radius: 0 0 8px 8px;
+  }
+  .input-group {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+  .roll-input {
+    flex: 1;
+    min-width: 200px;
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    border: 2px solid var(--ruled);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: var(--ink);
+    background: var(--paper);
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+  }
+  .roll-input:focus {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 4px rgba(26,26,46,.06);
+  }
+  .roll-input::placeholder { color: #bbb; font-weight: 400; letter-spacing: .04em; font-size: 16px; }
+  .search-btn {
+    padding: 16px 32px;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: .03em;
+    transition: transform .15s, background .2s;
+    white-space: nowrap;
+  }
+  .search-btn:hover { background: #2d2d4e; transform: translateY(-1px); }
+  .search-btn:active { transform: translateY(0); }
+
+  /* ── ERROR ── */
+  .error-msg {
+    display: none;
+    margin-top: 16px;
+    padding: 14px 18px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    color: #991b1b;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* ── RESULT PANEL ── */
+  .result-panel {
+    display: none;
+    max-width: 820px;
+    margin: 28px auto 0;
+    padding: 0 24px;
+    animation: slideIn .4s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes slideIn {
+    from { opacity:0; transform: translateY(20px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  /* Student ID strip */
+  .student-strip {
+    background: var(--ink);
+    border-radius: 16px 16px 0 0;
+    padding: 22px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .student-name-block { }
+  .student-label { color: rgba(255,255,255,.45); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+  .student-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: #fff;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .student-roll {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: rgba(255,255,255,.5);
+    margin-top: 4px;
+  }
+  .gender-badge {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 30px;
+    padding: 6px 18px;
+    color: rgba(255,255,255,.8);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* Marks section */
+  .marks-section {
+    background: #fff;
+    padding: 28px 32px;
+    border-left: 1px solid var(--ruled);
+    border-right: 1px solid var(--ruled);
+  }
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 16px;
+  }
+  .marks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+  }
+  .mark-box {
+    background: var(--paper);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--ruled);
+    position: relative;
+    transition: transform .2s;
+  }
+  .mark-box:hover { transform: translateY(-2px); }
+  .mark-subject { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #888; margin-bottom: 6px; }
+  .mark-score {
+    font-family: 'Space Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .mark-score.na { font-size: 18px; color: #ccc; }
+  .mark-bar {
+    height: 3px;
+    background: var(--ruled);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  .mark-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s cubic-bezier(.16,1,.3,1);
+  }
+  .mark-box.pass .mark-score { color: var(--ink); }
+  .mark-box.fail .mark-score { color: #ef4444; }
+  .mark-box.na-box .mark-score { color: #ccc; }
+
+  /* Allotted Stream */
+  .allotted-section {
+    background: #fff;
+    padding: 28px 32px;
+    border-left: 1px solid var(--ruled);
+    border-right: 1px solid var(--ruled);
+    border-top: 1px dashed var(--ruled);
+  }
+  .allotted-stream-card {
+    border-radius: 14px;
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 2px solid;
+    position: relative;
+    overflow: hidden;
+  }
+  .allotted-stream-card::before {
+    content: '';
+    position: absolute;
+    right: -20px; top: -20px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    opacity: .08;
+    background: currentColor;
+  }
+  .stream-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+  .stream-allotted-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .6; }
+  .stream-allotted-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-top: 2px;
+  }
+  .stream-allotted-desc { font-size: 12px; opacity: .6; margin-top: 4px; }
+
+  /* PCM */
+  .s-pcm   { border-color: #bfdbfe; background: #eff6ff; color: var(--pcm-color); }
+  .s-pcm .stream-icon { background: #dbeafe; }
+  .s-pcm .stream-allotted-name { color: var(--pcm-color); }
+
+  .s-pcb   { border-color: #bbf7d0; background: #f0fdf4; color: var(--pcb-color); }
+  .s-pcb .stream-icon { background: #dcfce7; }
+  .s-pcb .stream-allotted-name { color: var(--pcb-color); }
+
+  .s-cwm   { border-color: #fde68a; background: #fffbeb; color: var(--comm-m-color); }
+  .s-cwm .stream-icon { background: #fef3c7; }
+  .s-cwm .stream-allotted-name { color: var(--comm-m-color); }
+
+  .s-cwom  { border-color: #ddd6fe; background: #f5f3ff; color: var(--comm-color); }
+  .s-cwom .stream-icon { background: #ede9fe; }
+  .s-cwom .stream-allotted-name { color: var(--comm-color); }
+
+  .s-hum   { border-color: #fbcfe8; background: #fdf2f8; color: var(--hum-color); }
+  .s-hum .stream-icon { background: #fce7f3; }
+  .s-hum .stream-allotted-name { color: var(--hum-color); }
+
+  .s-none  { border-color: #fee2e2; background: #fff5f5; color: #ef4444; }
+  .s-none .stream-icon { background: #fee2e2; }
+  .s-none .stream-allotted-name { color: #ef4444; }
+
+  /* Eligible streams */
+  .eligible-section {
+    background: #fff;
+    padding: 24px 32px 32px;
+    border: 1px solid var(--ruled);
+    border-top: 1px dashed var(--ruled);
+    border-radius: 0 0 16px 16px;
+  }
+  .elig-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .elig-tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1.5px solid;
+    transition: transform .15s;
+    cursor: default;
+  }
+  .elig-tag:hover { transform: scale(1.03); }
+  .elig-tag .tag-icon { font-size: 16px; }
+  .elig-tag.t-pcm   { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
+  .elig-tag.t-pcb   { background: #f0fdf4; border-color: #86efac; color: #15803d; }
+  .elig-tag.t-cwm   { background: #fffbeb; border-color: #fcd34d; color: #b45309; }
+  .elig-tag.t-cwom  { background: #f5f3ff; border-color: #c4b5fd; color: #6d28d9; }
+  .elig-tag.t-hum   { background: #fdf2f8; border-color: #f9a8d4; color: #be185d; }
+
+  /* Criteria table */
+  .criteria-section {
+    max-width: 820px;
+    margin: 32px auto 0;
+    padding: 0 24px;
+  }
+  .criteria-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid var(--ruled);
+    overflow: hidden;
+    box-shadow: 0 2px 16px var(--shadow);
+  }
+  .criteria-header {
+    background: var(--ink);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .criteria-header h3 {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .03em;
+  }
+  .criteria-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .criteria-table thead th {
+    background: #f8f7f4;
+    padding: 12px 16px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #666;
+    border-bottom: 1px solid var(--ruled);
+  }
+  .criteria-table thead th:first-child { text-align: left; }
+  .criteria-table tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f0ece4;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .criteria-table tbody td:first-child {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    text-align: left;
+  }
+  .criteria-table tbody tr:last-child td { border-bottom: none; }
+  .criteria-table tbody tr:hover td { background: #fafaf8; }
+  .cval { color: var(--ink); }
+  .cna  { color: #ccc; }
+  .cany { color: var(--hum-color); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; }
+  
+  .stream-row-pcm td:first-child  { border-left: 3px solid var(--pcm-color); padding-left: 14px; }
+  .stream-row-pcb td:first-child  { border-left: 3px solid var(--pcb-color); }
+  .stream-row-cwm td:first-child  { border-left: 3px solid var(--comm-m-color); }
+  .stream-row-cwom td:first-child { border-left: 3px solid var(--comm-color); }
+  .stream-row-hum td:first-child  { border-left: 3px solid var(--hum-color); }
+
+  /* Not eligible note */
+  .not-eligible-note {
+    margin-top: 16px;
+    padding: 14px 18px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+    color: #92400e;
+    font-size: 13px;
+    line-height: 1.5;
+    display: none;
+  }
+
+  /* Footer */
+  .footer {
+    max-width: 820px;
+    margin: 20px auto 0;
+    padding: 0 24px;
+    text-align: center;
+    color: #aaa;
+    font-size: 12px;
+  }
+
+  /* Pencil cursor detail */
+  .pencil-note {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: #b0a898;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pencil-note::before { content: '✏️'; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="school-badge">
+      <span class="badge-dot"></span>
+      <span>Session 2026–27 · Class XI Stream Allotment</span>
+    </div>
+    <h1>Your Path to<br><em>Class XI</em> Starts Here</h1>
+    <p class="header-sub">Enter your Roll Number to view your allotted stream and eligibility status</p>
+    <div class="criteria-strip">
+      <div class="crit-pill crit-pcm">PCM · Sci+Math Std ≥71, Eng ≥51</div>
+      <div class="crit-pill crit-pcb">PCB · Sci ≥61, Math Basic ≥71, Eng ≥51</div>
+      <div class="crit-pill crit-comwm">Commerce+Maths · Math Std ≥71, Eng ≥51</div>
+      <div class="crit-pill crit-com">Commerce · Sci/Math Basic ≥51, Eng ≥51</div>
+      <div class="crit-pill crit-hum">Humanities · No Restriction</div>
+    </div>
+  </div>
+</div>
+
+<div class="lookup-wrap">
+  <div class="lookup-card">
+    <div class="input-group">
+      <input class="roll-input" id="rollInput" type="text" placeholder="e.g. 32183474" maxlength="10" autocomplete="off" />
+      <button class="search-btn" onclick="lookup()">Search →</button>
+    </div>
+    <div class="pencil-note">Type your 8-digit board roll number and press Search</div>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+</div>
+
+<div class="result-panel" id="resultPanel">
+  <!-- Student strip -->
+  <div class="student-strip">
+    <div class="student-name-block">
+      <div class="student-label">Student Name</div>
+      <div class="student-name" id="resName">—</div>
+      <div class="student-roll" id="resRoll">—</div>
+    </div>
+    <div class="gender-badge" id="resGender">—</div>
+  </div>
+
+  <!-- Marks -->
+  <div class="marks-section">
+    <div class="section-label">📋 Marks Scored in Board Examination</div>
+    <div class="marks-grid" id="marksGrid"></div>
+  </div>
+
+  <!-- Allotted Stream -->
+  <div class="allotted-section">
+    <div class="section-label">🎓 Allotted Stream</div>
+    <div class="allotted-stream-card" id="allottedCard">
+      <div class="stream-icon" id="allottedIcon"></div>
+      <div>
+        <div class="stream-allotted-label">You have been allotted</div>
+        <div class="stream-allotted-name" id="allottedName">—</div>
+        <div class="stream-allotted-desc" id="allottedDesc">—</div>
+      </div>
+    </div>
+    <div class="not-eligible-note" id="notEligNote"></div>
+  </div>
+
+  <!-- Eligible Streams -->
+  <div class="eligible-section">
+    <div class="section-label">✅ Eligible For Streams</div>
+    <div class="elig-grid" id="eligGrid"></div>
+  </div>
+</div>
+
+<!-- Criteria Reference Table -->
+<div class="criteria-section">
+  <div class="criteria-card">
+    <div class="criteria-header">
+      <span>📊</span>
+      <h3>Stream Allotment Criteria Reference</h3>
+    </div>
+    <table class="criteria-table">
+      <thead>
+        <tr>
+          <th>Stream</th>
+          <th>Science</th>
+          <th>Maths Std (041)</th>
+          <th>Maths Basic (241)</th>
+          <th>English</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="stream-row-pcm">
+          <td>⚗️ PCM</td>
+          <td class="cval">≥ 71</td>
+          <td class="cval">≥ 71</td>
+          <td class="cna">—</td>
+          <td class="cval">≥ 51</td>
+        </tr>
+        <tr class="stream-row-pcb">
+          <td>🌿 PCB</td>
+          <td class="cval">≥ 61</td>
+          <td class="cna">—</td>
+          <td class="cval">≥ 71</td>
+          <td class="cval">≥ 51</td>
+        </tr>
+        <tr class="stream-row-cwm">
+          <td>📈 Commerce with Maths</td>
+          <td class="cna">N/A</td>
+          <td class="cval">≥ 71</td>
+          <td class="cna">—</td>
+          <td class="cval">≥ 51</td>
+        </tr>
+        <tr class="stream-row-cwom">
+          <td>💼 Commerce without Maths</td>
+          <td class="cna">N/A</td>
+          <td class="cval">≥ 51</td>
+          <td class="cval">≥ 61</td>
+          <td class="cval">≥ 51</td>
+        </tr>
+        <tr class="stream-row-hum">
+          <td>📚 Humanities</td>
+          <td class="cany" colspan="3">No Restriction</td>
+          <td class="cany">No Restriction</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  <p>Stream allotment is based on Board Examination 2025–26 marks as per CBSE criteria.</p>
+  <p style="margin-top:4px;">Contact school administration for queries or corrections.</p>
+</div>
+
+<script>
+const STUDENTS = [{"rollNo":"32183474","name":"SRISHTI JANA","gender":"Female","mathsStd":93.0,"science":98.0,"eng":95.0,"mathsBasic":null},{"rollNo":"32183272","name":"KRISH PANDEY","gender":"Male","mathsStd":93.0,"science":98.0,"eng":97.0,"mathsBasic":null},{"rollNo":"32183251","name":"ADITYA YADAV","gender":"Male","mathsStd":93.0,"science":98.0,"eng":97.0,"mathsBasic":null},{"rollNo":"32183495","name":"EASHA","gender":"Female","mathsStd":null,"science":91.0,"eng":98.0,"mathsBasic":95.0},{"rollNo":"32183311","name":"RAUNAK KUMAR OJHA","gender":"Male","mathsStd":96.0,"science":97.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183467","name":"PRINCE YADAV","gender":"Male","mathsStd":92.0,"science":95.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183529","name":"HARSH VINAYAK","gender":"Male","mathsStd":95.0,"science":95.0,"eng":90.0,"mathsBasic":null},{"rollNo":"32183401","name":"TEJAS YADAV","gender":"Male","mathsStd":88.0,"science":96.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183561","name":"YASH KUMAR SINGH","gender":"Male","mathsStd":92.0,"science":95.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183448","name":"AMAN SINGH","gender":"Male","mathsStd":88.0,"science":95.0,"eng":96.0,"mathsBasic":null},{"rollNo":"32183451","name":"ARNAV MAURYA","gender":"Male","mathsStd":92.0,"science":94.0,"eng":95.0,"mathsBasic":null},{"rollNo":"32183524","name":"ANSHIKA SINGH","gender":"Female","mathsStd":90.0,"science":94.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183395","name":"SHREYA YADAV","gender":"Female","mathsStd":89.0,"science":93.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183481","name":"YASH SINGH","gender":"Male","mathsStd":94.0,"science":96.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183359","name":"SURAJ KHARKWAL","gender":"Male","mathsStd":98.0,"science":94.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183408","name":"AARUSH KUMAR","gender":"Male","mathsStd":84.0,"science":97.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183217","name":"BHANU BOGOLE","gender":"Female","mathsStd":null,"science":92.0,"eng":90.0,"mathsBasic":91.0},{"rollNo":"32183215","name":"AYUSH KUMAR","gender":"Male","mathsStd":87.0,"science":91.0,"eng":92.0,"mathsBasic":null},{"rollNo":"32183458","name":"LUCKY RAZZ SINGH","gender":"Male","mathsStd":89.0,"science":94.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183423","name":"DIVYANSH SINGH","gender":"Male","mathsStd":82.0,"science":93.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183605","name":"ZOYA ANJUM","gender":"Female","mathsStd":84.0,"science":89.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183392","name":"SAKSHI TIWARI","gender":"Female","mathsStd":null,"science":97.0,"eng":87.0,"mathsBasic":88.0},{"rollNo":"32183354","name":"SANVI YADAV","gender":"Female","mathsStd":null,"science":93.0,"eng":93.0,"mathsBasic":86.0},{"rollNo":"32183534","name":"LAXMI KUMARI","gender":"Female","mathsStd":93.0,"science":91.0,"eng":86.0,"mathsBasic":null},{"rollNo":"32183583","name":"KAVYA YADAV","gender":"Female","mathsStd":82.0,"science":93.0,"eng":96.0,"mathsBasic":null},{"rollNo":"32183585","name":"KRITIKA","gender":"Female","mathsStd":78.0,"science":93.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183576","name":"KIRTI","gender":"Female","mathsStd":70.0,"science":96.0,"eng":98.0,"mathsBasic":null},{"rollNo":"32183507","name":"PRIYANSHI YADAV","gender":"Female","mathsStd":74.0,"science":94.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183434","name":"RASHI YADAV","gender":"Female","mathsStd":null,"science":91.0,"eng":93.0,"mathsBasic":79.0},{"rollNo":"32183376","name":"ANUPAM YADAV","gender":"Male","mathsStd":79.0,"science":95.0,"eng":89.0,"mathsBasic":null},{"rollNo":"32183400","name":"TARUN SINGH","gender":"Male","mathsStd":84.0,"science":92.0,"eng":92.0,"mathsBasic":null},{"rollNo":"32183475","name":"TARUN TIWARI","gender":"Male","mathsStd":null,"science":92.0,"eng":93.0,"mathsBasic":81.0},{"rollNo":"32183236","name":"SHALINI","gender":"Female","mathsStd":81.0,"science":94.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183571","name":"ROHIT KUMAR","gender":"Male","mathsStd":71.0,"science":93.0,"eng":96.0,"mathsBasic":null},{"rollNo":"32183403","name":"UTKARSH SINGH","gender":"Male","mathsStd":82.0,"science":91.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183479","name":"VAIBHAVI UPADHYAY","gender":"Female","mathsStd":76.0,"science":92.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183513","name":"SHREYA KUMARI","gender":"Female","mathsStd":73.0,"science":95.0,"eng":92.0,"mathsBasic":null},{"rollNo":"32183468","name":"RANVIJAY SINGH","gender":"Male","mathsStd":76.0,"science":90.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183551","name":"SANKET KUMAR YADAV","gender":"Male","mathsStd":84.0,"science":91.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183589","name":"RAGHAV MITTAL","gender":"Male","mathsStd":78.0,"science":88.0,"eng":92.0,"mathsBasic":null},{"rollNo":"32183345","name":"OM MISHRA","gender":"Male","mathsStd":95.0,"science":89.0,"eng":86.0,"mathsBasic":null},{"rollNo":"32183329","name":"AKANKSHA VISHWAKARMA","gender":"Female","mathsStd":78.0,"science":92.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183553","name":"SHREYA KUMARI","gender":"Female","mathsStd":82.0,"science":86.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183226","name":"KRANTIK PRADHAN","gender":"Male","mathsStd":92.0,"science":94.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183316","name":"SHAGUN SINGH","gender":"Female","mathsStd":79.0,"science":84.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183222","name":"HARSH KUMAR GIRI","gender":"Male","mathsStd":78.0,"science":94.0,"eng":89.0,"mathsBasic":null},{"rollNo":"32183424","name":"GAURAV KUMAR PANDEY","gender":"Male","mathsStd":80.0,"science":87.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183289","name":"ABHAY SINGH","gender":"Male","mathsStd":89.0,"science":88.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183554","name":"SHREYA RAI","gender":"Female","mathsStd":75.0,"science":93.0,"eng":92.0,"mathsBasic":null},{"rollNo":"32183493","name":"DEVIKA YADAV","gender":"Female","mathsStd":74.0,"science":92.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183302","name":"MANISH KUMAR","gender":"Male","mathsStd":74.0,"science":91.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183486","name":"AMEYA SINGH","gender":"Male","mathsStd":85.0,"science":87.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183422","name":"D KESAVARSHAN","gender":"Male","mathsStd":72.0,"science":92.0,"eng":95.0,"mathsBasic":null},{"rollNo":"32183319","name":"SHRISHTI SINGH","gender":"Female","mathsStd":null,"science":80.0,"eng":91.0,"mathsBasic":83.0},{"rollNo":"32183374","name":"ANSHIKA CHAND","gender":"Female","mathsStd":null,"science":88.0,"eng":86.0,"mathsBasic":90.0},{"rollNo":"32183545","name":"RAJNISH KUMAR SINGH","gender":"Male","mathsStd":84.0,"science":84.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183574","name":"ANSHU SAM","gender":"Male","mathsStd":65.0,"science":90.0,"eng":97.0,"mathsBasic":null},{"rollNo":"32183472","name":"SHREEJAL CHANDEL","gender":"Female","mathsStd":77.0,"science":85.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183464","name":"PIYUSH KUMAR THAKUR","gender":"Male","mathsStd":80.0,"science":89.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183396","name":"SIMRAN PRIYADARSHANI","gender":"Female","mathsStd":77.0,"science":87.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183228","name":"MAHIE GAUR","gender":"Female","mathsStd":82.0,"science":88.0,"eng":92.0,"mathsBasic":null},{"rollNo":"32183301","name":"KRISH RAJ SINGH","gender":"Male","mathsStd":73.0,"science":93.0,"eng":80.0,"mathsBasic":null},{"rollNo":"32183239","name":"SNEHA YADAV","gender":"Female","mathsStd":88.0,"science":78.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183331","name":"ALKA KUMARI","gender":"Female","mathsStd":74.0,"science":91.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183547","name":"RITIKA MISHRA","gender":"Female","mathsStd":55.0,"science":92.0,"eng":97.0,"mathsBasic":null},{"rollNo":"32183461","name":"NAITIK CHAND","gender":"Male","mathsStd":84.0,"science":79.0,"eng":95.0,"mathsBasic":null},{"rollNo":"32183450","name":"ARADHYA MISHRA","gender":"Female","mathsStd":74.0,"science":90.0,"eng":95.0,"mathsBasic":null},{"rollNo":"32183497","name":"LAXMI KUMARI","gender":"Female","mathsStd":67.0,"science":90.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183367","name":"AJAY YADAV","gender":"Male","mathsStd":80.0,"science":87.0,"eng":90.0,"mathsBasic":null},{"rollNo":"32183542","name":"PRERANA","gender":"Female","mathsStd":68.0,"science":89.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183539","name":"NIKET YADAV","gender":"Male","mathsStd":72.0,"science":87.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183426","name":"JIYA JHONSON","gender":"Female","mathsStd":null,"science":92.0,"eng":93.0,"mathsBasic":75.0},{"rollNo":"32183371","name":"ANCHAL YADAV","gender":"Female","mathsStd":75.0,"science":90.0,"eng":83.0,"mathsBasic":null},{"rollNo":"32183390","name":"RISHAV NAGARKOTI","gender":"Male","mathsStd":83.0,"science":88.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183291","name":"ADITYA KUMAR YADAV","gender":"Male","mathsStd":97.0,"science":93.0,"eng":69.0,"mathsBasic":null},{"rollNo":"32183575","name":"HARSH KUMAR RAI","gender":"Male","mathsStd":68.0,"science":87.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183249","name":"ABHIMANU KUMAR SINGH","gender":"Male","mathsStd":73.0,"science":96.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183394","name":"SHREYA RAI","gender":"Female","mathsStd":73.0,"science":86.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183218","name":"BHAVESH","gender":"Male","mathsStd":null,"science":85.0,"eng":91.0,"mathsBasic":74.0},{"rollNo":"32183483","name":"ADITEE YADAV","gender":"Female","mathsStd":71.0,"science":89.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183520","name":"ANIKET SHARMA","gender":"Male","mathsStd":73.0,"science":82.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183471","name":"ROSHAN KUMAR SINGH","gender":"Male","mathsStd":82.0,"science":88.0,"eng":89.0,"mathsBasic":null},{"rollNo":"32183405","name":"VIPUL MEHRA","gender":"Male","mathsStd":80.0,"science":92.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183548","name":"RITIKA TRIVEDI","gender":"Female","mathsStd":77.0,"science":85.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183309","name":"PRASHANT GARG","gender":"Male","mathsStd":82.0,"science":83.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183489","name":"ANSHUMAN SINGH","gender":"Male","mathsStd":86.0,"science":89.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183252","name":"AISHWARYA MALLA","gender":"Female","mathsStd":null,"science":86.0,"eng":89.0,"mathsBasic":79.0},{"rollNo":"32183532","name":"KARTIK SINGH","gender":"Male","mathsStd":68.0,"science":81.0,"eng":89.0,"mathsBasic":null},{"rollNo":"32183527","name":"DHRUV SINGH","gender":"Male","mathsStd":73.0,"science":91.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183402","name":"TOUHEED","gender":"Male","mathsStd":71.0,"science":92.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183604","name":"SRASHTI SINGHAL","gender":"Female","mathsStd":null,"science":69.0,"eng":84.0,"mathsBasic":88.0},{"rollNo":"32183321","name":"SHUBHAM","gender":"Male","mathsStd":74.0,"science":82.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183242","name":"VANSHIKA SHUKLA","gender":"Female","mathsStd":null,"science":84.0,"eng":92.0,"mathsBasic":74.0},{"rollNo":"32183428","name":"MAYANK YADAV","gender":"Male","mathsStd":80.0,"science":87.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183586","name":"RITIKA SINGH","gender":"Female","mathsStd":null,"science":81.0,"eng":96.0,"mathsBasic":61.0},{"rollNo":"32183516","name":"TANYA KUMARI","gender":"Female","mathsStd":60.0,"science":93.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183322","name":"SIDDHANT","gender":"Male","mathsStd":74.0,"science":88.0,"eng":81.0,"mathsBasic":null},{"rollNo":"32183462","name":"NAMAN SINGH DASHONI","gender":"Male","mathsStd":83.0,"science":89.0,"eng":86.0,"mathsBasic":null},{"rollNo":"32183430","name":"MOHD SAHIL KHAN","gender":"Male","mathsStd":72.0,"science":94.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183598","name":"KESHAV KUMAR TIWARI","gender":"Male","mathsStd":70.0,"science":82.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183506","name":"PRATEEK PUNEDA","gender":"Male","mathsStd":67.0,"science":89.0,"eng":89.0,"mathsBasic":null},{"rollNo":"32183364","name":"YASH DIXIT","gender":"Male","mathsStd":68.0,"science":84.0,"eng":89.0,"mathsBasic":null},{"rollNo":"32183440","name":"SURYANSH SINGH","gender":"Male","mathsStd":70.0,"science":91.0,"eng":86.0,"mathsBasic":null},{"rollNo":"32183446","name":"AAYUSHI","gender":"Female","mathsStd":55.0,"science":86.0,"eng":95.0,"mathsBasic":null},{"rollNo":"32183386","name":"NIKHIL KUMAR SHUKLA","gender":"Male","mathsStd":66.0,"science":85.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183536","name":"MAYANK PANDEY","gender":"Male","mathsStd":68.0,"science":83.0,"eng":84.0,"mathsBasic":null},{"rollNo":"32183494","name":"DIVYANSH SINGH","gender":"Male","mathsStd":72.0,"science":80.0,"eng":92.0,"mathsBasic":null},{"rollNo":"32183375","name":"ANSHIKA PANDEY","gender":"Female","mathsStd":null,"science":84.0,"eng":86.0,"mathsBasic":75.0},{"rollNo":"32183213","name":"ANIMESH KUMAR SINGH","gender":"Male","mathsStd":77.0,"science":94.0,"eng":77.0,"mathsBasic":null},{"rollNo":"32183305","name":"MD AMIR HAMZA","gender":"Male","mathsStd":76.0,"science":77.0,"eng":82.0,"mathsBasic":null},{"rollNo":"32183533","name":"KUMARI MADHU","gender":"Female","mathsStd":50.0,"science":88.0,"eng":96.0,"mathsBasic":null},{"rollNo":"32183260","name":"ATHARV MAURYA","gender":"Male","mathsStd":69.0,"science":82.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183248","name":"YUVRAJ YADAV","gender":"Male","mathsStd":74.0,"science":88.0,"eng":84.0,"mathsBasic":null},{"rollNo":"32183588","name":"KOUSINI NANDI","gender":"Female","mathsStd":70.0,"science":80.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183563","name":"PRIYANKA","gender":"Female","mathsStd":null,"science":83.0,"eng":82.0,"mathsBasic":74.0},{"rollNo":"32183384","name":"KUNAL BORA","gender":"Male","mathsStd":72.0,"science":84.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183383","name":"KRISH KUMAR","gender":"Male","mathsStd":74.0,"science":95.0,"eng":80.0,"mathsBasic":null},{"rollNo":"32183298","name":"DEEP SHIKHA","gender":"Female","mathsStd":null,"science":74.0,"eng":86.0,"mathsBasic":61.0},{"rollNo":"32183519","name":"ABHIYANSHU PANDEY","gender":"Male","mathsStd":63.0,"science":87.0,"eng":86.0,"mathsBasic":null},{"rollNo":"32183372","name":"ANIRUDRA SINGH","gender":"Male","mathsStd":82.0,"science":70.0,"eng":90.0,"mathsBasic":null},{"rollNo":"32183480","name":"VAISHNAVI RATHORE","gender":"Female","mathsStd":null,"science":83.0,"eng":90.0,"mathsBasic":72.0},{"rollNo":"32183347","name":"PRACHI KUMARI","gender":"Female","mathsStd":null,"science":78.0,"eng":96.0,"mathsBasic":73.0},{"rollNo":"32183214","name":"ARYAN KUMAR SINGH","gender":"Male","mathsStd":68.0,"science":81.0,"eng":86.0,"mathsBasic":null},{"rollNo":"32183388","name":"PRINCE KUMAR VERMA","gender":"Male","mathsStd":null,"science":87.0,"eng":86.0,"mathsBasic":71.0},{"rollNo":"32183560","name":"RIYA SHARMA","gender":"Female","mathsStd":null,"science":88.0,"eng":90.0,"mathsBasic":55.0},{"rollNo":"32183253","name":"AKSHIT DUBEY","gender":"Male","mathsStd":76.0,"science":79.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183445","name":"AAYUSH RAWAT","gender":"Male","mathsStd":55.0,"science":85.0,"eng":92.0,"mathsBasic":null},{"rollNo":"32183470","name":"RITIKA KUMARI PANDEY","gender":"Female","mathsStd":60.0,"science":71.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183582","name":"HARSHIT RAJ JEEVAN","gender":"Male","mathsStd":64.0,"science":97.0,"eng":85.0,"mathsBasic":null},{"rollNo":"32183246","name":"YAMINI SINGH","gender":"Female","mathsStd":null,"science":85.0,"eng":87.0,"mathsBasic":74.0},{"rollNo":"32183599","name":"SHREYA SINGH","gender":"Female","mathsStd":61.0,"science":90.0,"eng":82.0,"mathsBasic":null},{"rollNo":"32183517","name":"VAIBHAV BISHT","gender":"Male","mathsStd":64.0,"science":83.0,"eng":89.0,"mathsBasic":null},{"rollNo":"32183344","name":"NISHA KUMARI","gender":"Female","mathsStd":72.0,"science":88.0,"eng":95.0,"mathsBasic":null},{"rollNo":"32183243","name":"VEDIKA","gender":"Female","mathsStd":71.0,"science":80.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183350","name":"PREETI KUMARI","gender":"Female","mathsStd":null,"science":87.0,"eng":87.0,"mathsBasic":54.0},{"rollNo":"32183531","name":"JEET PRATAP SINGH","gender":"Male","mathsStd":63.0,"science":76.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183541","name":"OM SHANKAR","gender":"Male","mathsStd":69.0,"science":75.0,"eng":83.0,"mathsBasic":null},{"rollNo":"32183237","name":"SHAURYA TRIPATHI","gender":"Male","mathsStd":61.0,"science":86.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183601","name":"SWARN PRATAP SINGH","gender":"Male","mathsStd":56.0,"science":79.0,"eng":86.0,"mathsBasic":null},{"rollNo":"32183500","name":"MOHD JISHAN","gender":"Male","mathsStd":65.0,"science":75.0,"eng":89.0,"mathsBasic":null},{"rollNo":"32183353","name":"SAKSHI JOSHI","gender":"Female","mathsStd":70.0,"science":86.0,"eng":85.0,"mathsBasic":null},{"rollNo":"32183241","name":"TANMAY YADAV","gender":"Male","mathsStd":72.0,"science":89.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183266","name":"DIPYANSI RAI","gender":"Female","mathsStd":56.0,"science":78.0,"eng":94.0,"mathsBasic":null},{"rollNo":"32183572","name":"SHAURYA PRATAP SINGH","gender":"Male","mathsStd":53.0,"science":84.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183265","name":"DIKSHANT PANDEY","gender":"Male","mathsStd":59.0,"science":83.0,"eng":85.0,"mathsBasic":null},{"rollNo":"32183264","name":"DEEPSHIKHA YADAV","gender":"Female","mathsStd":56.0,"science":85.0,"eng":86.0,"mathsBasic":null},{"rollNo":"32183257","name":"ANSHIKA","gender":"Female","mathsStd":null,"science":74.0,"eng":88.0,"mathsBasic":66.0},{"rollNo":"32183476","name":"UNMUKTI TIWARI","gender":"Female","mathsStd":52.0,"science":82.0,"eng":85.0,"mathsBasic":null},{"rollNo":"32183437","name":"SANCHITA PANDEY","gender":"Female","mathsStd":57.0,"science":83.0,"eng":83.0,"mathsBasic":null},{"rollNo":"32183600","name":"SNEHA RAWAT","gender":"Female","mathsStd":53.0,"science":89.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183378","name":"ARUSHI TRIPATHI","gender":"Female","mathsStd":55.0,"science":92.0,"eng":86.0,"mathsBasic":null},{"rollNo":"32183525","name":"ANSHU","gender":"Female","mathsStd":69.0,"science":78.0,"eng":86.0,"mathsBasic":null},{"rollNo":"32183366","name":"ADITI","gender":"Female","mathsStd":66.0,"science":84.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183562","name":"ANSHUL RAINSWAL","gender":"Male","mathsStd":58.0,"science":75.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183221","name":"GOURAV SINGH","gender":"Male","mathsStd":null,"science":75.0,"eng":86.0,"mathsBasic":62.0},{"rollNo":"32183565","name":"SAMEER KUMAR","gender":"Male","mathsStd":58.0,"science":82.0,"eng":82.0,"mathsBasic":null},{"rollNo":"32183296","name":"AVIKA","gender":"Female","mathsStd":null,"science":69.0,"eng":88.0,"mathsBasic":69.0},{"rollNo":"32183348","name":"PRATICHHA","gender":"Female","mathsStd":null,"science":78.0,"eng":86.0,"mathsBasic":64.0},{"rollNo":"32183512","name":"SHIVENDRA SINGH","gender":"Male","mathsStd":78.0,"science":70.0,"eng":82.0,"mathsBasic":null},{"rollNo":"32183427","name":"JAHNAVI TIWARI","gender":"Female","mathsStd":null,"science":62.0,"eng":88.0,"mathsBasic":75.0},{"rollNo":"32183288","name":"AASTHA SINGH","gender":"Female","mathsStd":null,"science":71.0,"eng":87.0,"mathsBasic":73.0},{"rollNo":"32183511","name":"SHALNI KUMARI","gender":"Female","mathsStd":null,"science":73.0,"eng":92.0,"mathsBasic":52.0},{"rollNo":"32183429","name":"MEDHA KUMARI","gender":"Female","mathsStd":null,"science":76.0,"eng":76.0,"mathsBasic":79.0},{"rollNo":"32183526","name":"ANURAG KUMAR YADAV","gender":"Male","mathsStd":64.0,"science":67.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183381","name":"HIMANSHU PANDEY","gender":"Male","mathsStd":70.0,"science":74.0,"eng":84.0,"mathsBasic":null},{"rollNo":"32183406","name":"VIVEK KUMAR","gender":"Male","mathsStd":69.0,"science":81.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183290","name":"ADITYA KUMAR GUPTA","gender":"Male","mathsStd":79.0,"science":81.0,"eng":79.0,"mathsBasic":null},{"rollNo":"32183361","name":"VAISHNAVI SINGH","gender":"Female","mathsStd":61.0,"science":76.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183584","name":"KOMAL","gender":"Female","mathsStd":null,"science":59.0,"eng":88.0,"mathsBasic":57.0},{"rollNo":"32183269","name":"JASWANT KUMAR","gender":"Male","mathsStd":65.0,"science":75.0,"eng":83.0,"mathsBasic":null},{"rollNo":"32183286","name":"SIYA CHOUDHARY","gender":"Female","mathsStd":null,"science":73.0,"eng":87.0,"mathsBasic":71.0},{"rollNo":"32183577","name":"VAISHNAVI SINGH","gender":"Female","mathsStd":44.0,"science":71.0,"eng":90.0,"mathsBasic":null},{"rollNo":"32183271","name":"KANCHAN RAWAT","gender":"Female","mathsStd":54.0,"science":77.0,"eng":83.0,"mathsBasic":null},{"rollNo":"32183492","name":"DEEKSHA","gender":"Female","mathsStd":null,"science":76.0,"eng":93.0,"mathsBasic":57.0},{"rollNo":"32183456","name":"KIRANPREET KAUR","gender":"Female","mathsStd":null,"science":71.0,"eng":92.0,"mathsBasic":52.0},{"rollNo":"32183594","name":"ADITYA CHAUHAN","gender":"Male","mathsStd":62.0,"science":85.0,"eng":82.0,"mathsBasic":null},{"rollNo":"32183528","name":"DIKSHA YADAV","gender":"Female","mathsStd":65.0,"science":73.0,"eng":82.0,"mathsBasic":null},{"rollNo":"32183505","name":"PRATEEK KUMAR","gender":"Male","mathsStd":63.0,"science":63.0,"eng":90.0,"mathsBasic":null},{"rollNo":"32183283","name":"SHAURYA SINGH","gender":"Male","mathsStd":57.0,"science":74.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183356","name":"SHEKHAR TRIPATHI","gender":"Male","mathsStd":null,"science":75.0,"eng":80.0,"mathsBasic":76.0},{"rollNo":"32183310","name":"PRENA CHAND","gender":"Female","mathsStd":82.0,"science":70.0,"eng":75.0,"mathsBasic":null},{"rollNo":"32183324","name":"UTTKARSH KUMAR","gender":"Male","mathsStd":42.0,"science":81.0,"eng":86.0,"mathsBasic":null},{"rollNo":"32183581","name":"JOSHU SINGH","gender":"Female","mathsStd":49.0,"science":72.0,"eng":89.0,"mathsBasic":null},{"rollNo":"32183466","name":"PRATYUSH SINGH","gender":"Male","mathsStd":66.0,"science":87.0,"eng":75.0,"mathsBasic":null},{"rollNo":"32183569","name":"DRISHTI KUMARI","gender":"Female","mathsStd":45.0,"science":76.0,"eng":89.0,"mathsBasic":null},{"rollNo":"32183306","name":"MOHIT KUMAR SINGH","gender":"Male","mathsStd":75.0,"science":76.0,"eng":84.0,"mathsBasic":null},{"rollNo":"32183438","name":"SHIVENDRA BAHADUR SINGH","gender":"Male","mathsStd":47.0,"science":85.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183337","name":"DIVYANSH DUTT","gender":"Male","mathsStd":75.0,"science":73.0,"eng":81.0,"mathsBasic":null},{"rollNo":"32183320","name":"SHUBANSHU PRASAD","gender":"Male","mathsStd":73.0,"science":74.0,"eng":72.0,"mathsBasic":null},{"rollNo":"32183444","name":"AAKRITI YADAV","gender":"Female","mathsStd":48.0,"science":71.0,"eng":96.0,"mathsBasic":null},{"rollNo":"32183308","name":"NOOR AFSA","gender":"Female","mathsStd":null,"science":65.0,"eng":86.0,"mathsBasic":60.0},{"rollNo":"32183300","name":"ESHIKA SHARMA","gender":"Female","mathsStd":null,"science":69.0,"eng":88.0,"mathsBasic":61.0},{"rollNo":"32183358","name":"SOURYA PRATAP SINGH","gender":"Male","mathsStd":66.0,"science":70.0,"eng":80.0,"mathsBasic":null},{"rollNo":"32183274","name":"KUSH KUMAR THAKUR","gender":"Male","mathsStd":54.0,"science":83.0,"eng":85.0,"mathsBasic":null},{"rollNo":"32183591","name":"SHRISHTI KUMARI","gender":"Female","mathsStd":null,"science":77.0,"eng":86.0,"mathsBasic":65.0},{"rollNo":"32183414","name":"ANANYA TANEJA","gender":"Female","mathsStd":51.0,"science":70.0,"eng":92.0,"mathsBasic":null},{"rollNo":"32183256","name":"ANJALI BISHT","gender":"Female","mathsStd":51.0,"science":82.0,"eng":78.0,"mathsBasic":null},{"rollNo":"32183538","name":"NIDHI YADAV","gender":"Female","mathsStd":56.0,"science":60.0,"eng":84.0,"mathsBasic":null},{"rollNo":"32183449","name":"ANU KUMARI","gender":"Female","mathsStd":null,"science":77.0,"eng":91.0,"mathsBasic":54.0},{"rollNo":"32183363","name":"VIPUL KUMAR","gender":"Male","mathsStd":80.0,"science":70.0,"eng":85.0,"mathsBasic":null},{"rollNo":"32183487","name":"ANJALI YADAV","gender":"Female","mathsStd":51.0,"science":72.0,"eng":77.0,"mathsBasic":null},{"rollNo":"32183362","name":"VAISHNAVI SHARMA","gender":"Female","mathsStd":null,"science":68.0,"eng":94.0,"mathsBasic":57.0},{"rollNo":"32183552","name":"SATYAM KUMAR SINGH","gender":"Male","mathsStd":65.0,"science":86.0,"eng":83.0,"mathsBasic":null},{"rollNo":"32183409","name":"AAYUSH AMAN","gender":"Male","mathsStd":58.0,"science":88.0,"eng":83.0,"mathsBasic":null},{"rollNo":"32183382","name":"KAJAL KUMARI","gender":"Female","mathsStd":null,"science":74.0,"eng":81.0,"mathsBasic":54.0},{"rollNo":"32183389","name":"PRIYANSHU CHANDRA AICH","gender":"Male","mathsStd":63.0,"science":66.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183227","name":"KRISH KUMAR SINGH","gender":"Male","mathsStd":59.0,"science":71.0,"eng":79.0,"mathsBasic":null},{"rollNo":"32183278","name":"PRATIK SINGH","gender":"Male","mathsStd":59.0,"science":78.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183568","name":"ATIKA SINGH","gender":"Female","mathsStd":49.0,"science":73.0,"eng":86.0,"mathsBasic":null},{"rollNo":"32183270","name":"JIYA","gender":"Female","mathsStd":null,"science":78.0,"eng":71.0,"mathsBasic":68.0},{"rollNo":"32183339","name":"DIYA","gender":"Female","mathsStd":null,"science":63.0,"eng":89.0,"mathsBasic":52.0},{"rollNo":"32183420","name":"ARYAN TIWARI","gender":"Male","mathsStd":54.0,"science":69.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183261","name":"AYUSH","gender":"Male","mathsStd":57.0,"science":78.0,"eng":71.0,"mathsBasic":null},{"rollNo":"32183210","name":"AMAN KUMAR GUPTA","gender":"Male","mathsStd":49.0,"science":81.0,"eng":82.0,"mathsBasic":null},{"rollNo":"32183550","name":"S ANKITA REDDY","gender":"Female","mathsStd":null,"science":71.0,"eng":79.0,"mathsBasic":57.0},{"rollNo":"32183579","name":"SUSHIL KUMAR","gender":"Male","mathsStd":58.0,"science":79.0,"eng":85.0,"mathsBasic":null},{"rollNo":"32183326","name":"ABHINAV DUBEY","gender":"Male","mathsStd":61.0,"science":78.0,"eng":69.0,"mathsBasic":null},{"rollNo":"32183284","name":"SHREYA SINGH","gender":"Female","mathsStd":60.0,"science":74.0,"eng":83.0,"mathsBasic":null},{"rollNo":"32183360","name":"UDBHAV BISHT","gender":"Male","mathsStd":61.0,"science":61.0,"eng":87.0,"mathsBasic":null},{"rollNo":"32183510","name":"SANSKRITI DUBEY","gender":"Female","mathsStd":46.0,"science":71.0,"eng":89.0,"mathsBasic":null},{"rollNo":"32183432","name":"PRABAL KUMAR","gender":"Male","mathsStd":null,"science":69.0,"eng":87.0,"mathsBasic":53.0},{"rollNo":"32183255","name":"AMAN SINGH","gender":"Male","mathsStd":null,"science":67.0,"eng":81.0,"mathsBasic":74.0},{"rollNo":"32183369","name":"ANANYA KUMARI","gender":"Female","mathsStd":52.0,"science":75.0,"eng":90.0,"mathsBasic":null},{"rollNo":"32183393","name":"SANSKRITI KHARAYAT","gender":"Female","mathsStd":null,"science":60.0,"eng":82.0,"mathsBasic":70.0},{"rollNo":"32183238","name":"SHREYANSH SINGH","gender":"Male","mathsStd":null,"science":58.0,"eng":88.0,"mathsBasic":49.0},{"rollNo":"32183530","name":"HEMENT SINGH","gender":"Male","mathsStd":56.0,"science":65.0,"eng":81.0,"mathsBasic":null},{"rollNo":"32183596","name":"ANKUSH KUMAR SINGH","gender":"Male","mathsStd":65.0,"science":74.0,"eng":83.0,"mathsBasic":null},{"rollNo":"32183318","name":"SHREYA TRIPATHI","gender":"Female","mathsStd":null,"science":66.0,"eng":75.0,"mathsBasic":75.0},{"rollNo":"32183407","name":"AAISHA KHATOON","gender":"Female","mathsStd":null,"science":64.0,"eng":86.0,"mathsBasic":48.0},{"rollNo":"32183314","name":"RUDRA SINGH","gender":"Male","mathsStd":52.0,"science":83.0,"eng":75.0,"mathsBasic":null},{"rollNo":"32183397","name":"SUDHANSHU KUMAR","gender":"Male","mathsStd":null,"science":54.0,"eng":81.0,"mathsBasic":69.0},{"rollNo":"32183413","name":"AMRITA","gender":"Female","mathsStd":null,"science":69.0,"eng":85.0,"mathsBasic":55.0},{"rollNo":"32183498","name":"M RITHIKA SHRI","gender":"Female","mathsStd":62.0,"science":76.0,"eng":91.0,"mathsBasic":null},{"rollNo":"32183225","name":"JYOTI VERMA","gender":"Female","mathsStd":null,"science":87.0,"eng":79.0,"mathsBasic":47.0},{"rollNo":"32183602","name":"ABHISHEKH KUMAR OJHA","gender":"Male","mathsStd":52.0,"science":69.0,"eng":82.0,"mathsBasic":null},{"rollNo":"32183303","name":"MANISH SINGH","gender":"Male","mathsStd":53.0,"science":65.0,"eng":83.0,"mathsBasic":null},{"rollNo":"32183457","name":"LOKHANDE ALPHONSA GANESH","gender":"Female","mathsStd":50.0,"science":72.0,"eng":84.0,"mathsBasic":null},{"rollNo":"32183259","name":"APRAJIT KUMAR SINGH","gender":"Male","mathsStd":66.0,"science":60.0,"eng":82.0,"mathsBasic":null},{"rollNo":"32183436","name":"RUCHI YADAV","gender":"Female","mathsStd":null,"science":77.0,"eng":83.0,"mathsBasic":55.0},{"rollNo":"32183555","name":"UJJWAL RAI","gender":"Male","mathsStd":70.0,"science":68.0,"eng":71.0,"mathsBasic":null},{"rollNo":"32183254","name":"AKSHITA TIWARI","gender":"Female","mathsStd":47.0,"science":71.0,"eng":85.0,"mathsBasic":null},{"rollNo":"32183209","name":"ADEETYA YADAV","gender":"Male","mathsStd":53.0,"science":82.0,"eng":76.0,"mathsBasic":null},{"rollNo":"32183484","name":"ADITI KUMARI","gender":"Female","mathsStd":51.0,"science":72.0,"eng":85.0,"mathsBasic":null},{"rollNo":"32183223","name":"HARSH KUMAR PANDEY","gender":"Male","mathsStd":52.0,"science":63.0,"eng":77.0,"mathsBasic":null},{"rollNo":"32183411","name":"ABHIGYAN SINGH","gender":"Male","mathsStd":null,"science":73.0,"eng":88.0,"mathsBasic":61.0},{"rollNo":"32183304","name":"MAYANK YADAV","gender":"Male","mathsStd":58.0,"science":70.0,"eng":73.0,"mathsBasic":null},{"rollNo":"32183412","name":"ABHINAV YADAV","gender":"Male","mathsStd":43.0,"science":67.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183419","name":"ANSHIKA","gender":"Female","mathsStd":null,"science":66.0,"eng":91.0,"mathsBasic":43.0},{"rollNo":"32183425","name":"GAURAV SINGH","gender":"Male","mathsStd":null,"science":72.0,"eng":84.0,"mathsBasic":49.0},{"rollNo":"32183340","name":"KAVYA SINGH","gender":"Female","mathsStd":null,"science":75.0,"eng":79.0,"mathsBasic":60.0},{"rollNo":"32183544","name":"PRIYANSHU SINGH","gender":"Male","mathsStd":62.0,"science":68.0,"eng":81.0,"mathsBasic":null},{"rollNo":"32183463","name":"PARTIKSHA","gender":"Female","mathsStd":null,"science":53.0,"eng":90.0,"mathsBasic":60.0},{"rollNo":"32183566","name":"SHUBHAM","gender":"Male","mathsStd":48.0,"science":69.0,"eng":84.0,"mathsBasic":null},{"rollNo":"32183518","name":"ABHAY YADAV","gender":"Male","mathsStd":49.0,"science":70.0,"eng":77.0,"mathsBasic":null},{"rollNo":"32183373","name":"ANKITA PANDEY","gender":"Female","mathsStd":null,"science":66.0,"eng":85.0,"mathsBasic":54.0},{"rollNo":"32183333","name":"ARYA","gender":"Female","mathsStd":null,"science":52.0,"eng":90.0,"mathsBasic":53.0},{"rollNo":"32183299","name":"DIVYANSHU KUMAR YADAV","gender":"Male","mathsStd":52.0,"science":72.0,"eng":79.0,"mathsBasic":null},{"rollNo":"32183477","name":"VAIBHAV SHUKLA","gender":"Male","mathsStd":null,"science":72.0,"eng":80.0,"mathsBasic":55.0},{"rollNo":"32183499","name":"MANISH YADAV","gender":"Male","mathsStd":57.0,"science":67.0,"eng":75.0,"mathsBasic":null},{"rollNo":"32183442","name":"VIBHA KUMARI","gender":"Female","mathsStd":null,"science":61.0,"eng":86.0,"mathsBasic":60.0},{"rollNo":"32183377","name":"ANUSHKA SINGH","gender":"Female","mathsStd":null,"science":51.0,"eng":64.0,"mathsBasic":74.0},{"rollNo":"32183267","name":"HARNEET KAUR","gender":"Female","mathsStd":null,"science":60.0,"eng":64.0,"mathsBasic":76.0},{"rollNo":"32183293","name":"AMRITANSHI SHRIVASTAVA","gender":"Female","mathsStd":null,"science":59.0,"eng":80.0,"mathsBasic":67.0},{"rollNo":"32183447","name":"ADYANT SINGH","gender":"Male","mathsStd":58.0,"science":73.0,"eng":78.0,"mathsBasic":null},{"rollNo":"32183312","name":"RAUNAK YADAV","gender":"Female","mathsStd":null,"science":63.0,"eng":71.0,"mathsBasic":66.0},{"rollNo":"32183459","name":"MANNAT MISHRA","gender":"Female","mathsStd":null,"science":59.0,"eng":90.0,"mathsBasic":42.0},{"rollNo":"32183509","name":"ROUNAK KUMAR SINGH","gender":"Male","mathsStd":43.0,"science":58.0,"eng":85.0,"mathsBasic":null},{"rollNo":"32183281","name":"RIYA","gender":"Female","mathsStd":null,"science":60.0,"eng":83.0,"mathsBasic":71.0},{"rollNo":"32183343","name":"NAYTIK KUMAR CHOUBEY","gender":"Male","mathsStd":null,"science":65.0,"eng":71.0,"mathsBasic":63.0},{"rollNo":"32183385","name":"NAINA","gender":"Female","mathsStd":null,"science":54.0,"eng":82.0,"mathsBasic":49.0},{"rollNo":"32183496","name":"KHUSHBU YADAV","gender":"Female","mathsStd":54.0,"science":73.0,"eng":73.0,"mathsBasic":null},{"rollNo":"32183460","name":"MANSI YADAV","gender":"Female","mathsStd":37.0,"science":54.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183606","name":"ANKITA PAL","gender":"Female","mathsStd":null,"science":54.0,"eng":77.0,"mathsBasic":47.0},{"rollNo":"32183244","name":"VIKRANT MISHRA","gender":"Male","mathsStd":41.0,"science":81.0,"eng":80.0,"mathsBasic":null},{"rollNo":"32183504","name":"PRANAV KUMAR SINGH","gender":"Male","mathsStd":null,"science":60.0,"eng":84.0,"mathsBasic":49.0},{"rollNo":"32183567","name":"SOURABH KUMAR","gender":"Male","mathsStd":50.0,"science":79.0,"eng":79.0,"mathsBasic":null},{"rollNo":"32183355","name":"SHAAN DAS","gender":"Male","mathsStd":51.0,"science":55.0,"eng":93.0,"mathsBasic":null},{"rollNo":"32183443","name":"YASHVARDHAN SINGH","gender":"Male","mathsStd":41.0,"science":64.0,"eng":85.0,"mathsBasic":null},{"rollNo":"32183508","name":"RAHUL SINGH","gender":"Male","mathsStd":49.0,"science":50.0,"eng":88.0,"mathsBasic":null},{"rollNo":"32183501","name":"NITESH YADAV","gender":"Male","mathsStd":null,"science":60.0,"eng":85.0,"mathsBasic":59.0},{"rollNo":"32183235","name":"SANSKAR SINGH","gender":"Male","mathsStd":null,"science":52.0,"eng":81.0,"mathsBasic":63.0},{"rollNo":"32183435","name":"RUCHI KUMARI","gender":"Female","mathsStd":null,"science":62.0,"eng":83.0,"mathsBasic":54.0},{"rollNo":"32183399","name":"SWARIT","gender":"Male","mathsStd":null,"science":57.0,"eng":85.0,"mathsBasic":36.0},{"rollNo":"32183597","name":"ELAKSHI SHISHODIA","gender":"Female","mathsStd":39.0,"science":69.0,"eng":90.0,"mathsBasic":null},{"rollNo":"32183469","name":"RISHU TIWARI","gender":"Female","mathsStd":null,"science":58.0,"eng":92.0,"mathsBasic":54.0},{"rollNo":"32183391","name":"SAKSHI PAL","gender":"Female","mathsStd":null,"science":50.0,"eng":78.0,"mathsBasic":51.0},{"rollNo":"32183431","name":"NAMAN DIXIT","gender":"Male","mathsStd":null,"science":59.0,"eng":82.0,"mathsBasic":49.0},{"rollNo":"32183317","name":"SHASHANK DUBEY","gender":"Male","mathsStd":50.0,"science":60.0,"eng":70.0,"mathsBasic":null},{"rollNo":"32183370","name":"ANANYA MAURYA","gender":"Female","mathsStd":null,"science":60.0,"eng":83.0,"mathsBasic":50.0},{"rollNo":"32183558","name":"AAYUSH KUMAR ANAND","gender":"Male","mathsStd":52.0,"science":60.0,"eng":78.0,"mathsBasic":null},{"rollNo":"32183231","name":"PASANG GHISING","gender":"Female","mathsStd":null,"science":57.0,"eng":72.0,"mathsBasic":60.0},{"rollNo":"32183273","name":"KULDEEP TIWARI","gender":"Male","mathsStd":null,"science":56.0,"eng":86.0,"mathsBasic":61.0},{"rollNo":"32183323","name":"TRISHA YADAV","gender":"Female","mathsStd":36.0,"science":65.0,"eng":75.0,"mathsBasic":null},{"rollNo":"32183587","name":"BHAVESH KUMAR","gender":"Male","mathsStd":58.0,"science":55.0,"eng":75.0,"mathsBasic":null},{"rollNo":"32183387","name":"PRABHAKAR KUMAR PANDEY","gender":"Male","mathsStd":null,"science":50.0,"eng":74.0,"mathsBasic":59.0},{"rollNo":"32183580","name":"ANKUSH SINGH","gender":"Male","mathsStd":55.0,"science":63.0,"eng":74.0,"mathsBasic":null},{"rollNo":"32183455","name":"KHUSHI SINGH","gender":"Female","mathsStd":null,"science":53.0,"eng":85.0,"mathsBasic":46.0},{"rollNo":"32183537","name":"NAMRATA SINGH","gender":"Female","mathsStd":null,"science":56.0,"eng":83.0,"mathsBasic":38.0},{"rollNo":"32183398","name":"SUMIT KUMAR YADAV","gender":"Male","mathsStd":null,"science":57.0,"eng":83.0,"mathsBasic":74.0},{"rollNo":"32183307","name":"NIKHIL SINGH","gender":"Male","mathsStd":62.0,"science":61.0,"eng":74.0,"mathsBasic":null},{"rollNo":"32183212","name":"AMRIT","gender":"Male","mathsStd":null,"science":57.0,"eng":86.0,"mathsBasic":40.0},{"rollNo":"32183452","name":"ASHA SINGH","gender":"Female","mathsStd":null,"science":61.0,"eng":79.0,"mathsBasic":37.0},{"rollNo":"32183295","name":"ATHARVA SHANKAR PAWAR","gender":"Male","mathsStd":null,"science":61.0,"eng":84.0,"mathsBasic":47.0},{"rollNo":"32183297","name":"AYUSH KUMAR THAPA","gender":"Male","mathsStd":56.0,"science":60.0,"eng":70.0,"mathsBasic":null},{"rollNo":"32183417","name":"ANSH MISHRA","gender":"Male","mathsStd":null,"science":61.0,"eng":81.0,"mathsBasic":43.0},{"rollNo":"32183454","name":"ATHARV","gender":"Male","mathsStd":null,"science":52.0,"eng":79.0,"mathsBasic":49.0},{"rollNo":"32183416","name":"ANKIT KUMAR SINGH","gender":"Male","mathsStd":null,"science":59.0,"eng":70.0,"mathsBasic":53.0},{"rollNo":"32183523","name":"ANSHIKA SHUKLA","gender":"Female","mathsStd":null,"science":52.0,"eng":81.0,"mathsBasic":47.0},{"rollNo":"32183488","name":"ANSH KUMAR","gender":"Male","mathsStd":46.0,"science":68.0,"eng":66.0,"mathsBasic":null},{"rollNo":"32183332","name":"ALOK KUMAR","gender":"Male","mathsStd":49.0,"science":55.0,"eng":72.0,"mathsBasic":null},{"rollNo":"32183211","name":"AMAN KUMAR","gender":"Male","mathsStd":null,"science":58.0,"eng":70.0,"mathsBasic":56.0},{"rollNo":"32183595","name":"ANIKET YADAV","gender":"Male","mathsStd":44.0,"science":49.0,"eng":75.0,"mathsBasic":null},{"rollNo":"32183535","name":"MANTESH KUMAR CHOUHAN","gender":"Male","mathsStd":44.0,"science":54.0,"eng":79.0,"mathsBasic":null},{"rollNo":"32183294","name":"ARNAV YADAV","gender":"Male","mathsStd":38.0,"science":60.0,"eng":63.0,"mathsBasic":null},{"rollNo":"32183557","name":"VISHAL TRIPATHI","gender":"Male","mathsStd":37.0,"science":52.0,"eng":79.0,"mathsBasic":null},{"rollNo":"32183275","name":"LOKESH PRASAD","gender":"Male","mathsStd":63.0,"science":58.0,"eng":75.0,"mathsBasic":null},{"rollNo":"32183327","name":"ADITYA SINGH YADAV","gender":"Male","mathsStd":null,"science":42.0,"eng":81.0,"mathsBasic":61.0},{"rollNo":"32183415","name":"ANKIT BISHT","gender":"Male","mathsStd":null,"science":50.0,"eng":82.0,"mathsBasic":47.0},{"rollNo":"32183590","name":"RIYA KUMARI","gender":"Female","mathsStd":46.0,"science":46.0,"eng":76.0,"mathsBasic":null},{"rollNo":"32183315","name":"SAKSHI YADAV","gender":"Female","mathsStd":null,"science":63.0,"eng":61.0,"mathsBasic":53.0},{"rollNo":"32183592","name":"SHUBHAM YADAV","gender":"Male","mathsStd":49.0,"science":54.0,"eng":81.0,"mathsBasic":null},{"rollNo":"32183607","name":"VINEET SINGH","gender":"Male","mathsStd":31.0,"science":56.0,"eng":85.0,"mathsBasic":null},{"rollNo":"32183514","name":"SHUBHAM KUMAR HARSH","gender":"Male","mathsStd":44.0,"science":60.0,"eng":74.0,"mathsBasic":null},{"rollNo":"32183521","name":"ANKISH RANA","gender":"Male","mathsStd":46.0,"science":59.0,"eng":80.0,"mathsBasic":null},{"rollNo":"32183258","name":"ANUSHKA SINGH","gender":"Female","mathsStd":null,"science":54.0,"eng":86.0,"mathsBasic":40.0},{"rollNo":"32183491","name":"ASTHA SINGH","gender":"Female","mathsStd":42.0,"science":57.0,"eng":79.0,"mathsBasic":null},{"rollNo":"32183233","name":"RITIKA YADAV","gender":"Female","mathsStd":null,"science":47.0,"eng":76.0,"mathsBasic":43.0},{"rollNo":"32183453","name":"ASHWINI KUMAR YADAV","gender":"Male","mathsStd":47.0,"science":56.0,"eng":69.0,"mathsBasic":null},{"rollNo":"32183287","name":"AARUSH KUMAR","gender":"Male","mathsStd":null,"science":68.0,"eng":68.0,"mathsBasic":48.0},{"rollNo":"32183357","name":"SHIVAM KUMAR","gender":"Male","mathsStd":null,"science":57.0,"eng":71.0,"mathsBasic":55.0},{"rollNo":"32183559","name":"ADITYA KUMAR","gender":"Male","mathsStd":48.0,"science":56.0,"eng":67.0,"mathsBasic":null},{"rollNo":"32183502","name":"PABITRA TAMANG","gender":"Female","mathsStd":null,"science":52.0,"eng":82.0,"mathsBasic":49.0},{"rollNo":"32183564","name":"RISHABH TIWARI","gender":"Male","mathsStd":24.0,"science":51.0,"eng":83.0,"mathsBasic":null},{"rollNo":"32183234","name":"RIYA","gender":"Female","mathsStd":null,"science":52.0,"eng":89.0,"mathsBasic":38.0},{"rollNo":"32183380","name":"GAURAV KUMAR MISHRA","gender":"Male","mathsStd":49.0,"science":51.0,"eng":79.0,"mathsBasic":null},{"rollNo":"32183232","name":"RITIKA","gender":"Female","mathsStd":37.0,"science":54.0,"eng":75.0,"mathsBasic":null},{"rollNo":"32183268","name":"AASHI NISHAD","gender":"Female","mathsStd":null,"science":54.0,"eng":75.0,"mathsBasic":46.0},{"rollNo":"32183325","name":"ABHAY SINGH CHAUHAN","gender":"Male","mathsStd":37.0,"science":61.0,"eng":75.0,"mathsBasic":null},{"rollNo":"32183540","name":"NIRANJAN YADAV","gender":"Male","mathsStd":39.0,"science":43.0,"eng":77.0,"mathsBasic":null},{"rollNo":"32183503","name":"PIYUSH KUMAR","gender":"Male","mathsStd":39.0,"science":62.0,"eng":69.0,"mathsBasic":null},{"rollNo":"32183276","name":"LUV KUMAR THAKUR","gender":"Male","mathsStd":53.0,"science":66.0,"eng":67.0,"mathsBasic":null},{"rollNo":"32183229","name":"MANNAT SHUKLA","gender":"Female","mathsStd":null,"science":52.0,"eng":80.0,"mathsBasic":39.0},{"rollNo":"32183240","name":"SURAJ KUMAR","gender":"Male","mathsStd":null,"science":53.0,"eng":82.0,"mathsBasic":45.0},{"rollNo":"32183334","name":"ATUL TIWARI","gender":"Male","mathsStd":47.0,"science":65.0,"eng":68.0,"mathsBasic":null},{"rollNo":"32183515","name":"SWETA YADAV","gender":"Female","mathsStd":37.0,"science":43.0,"eng":83.0,"mathsBasic":null},{"rollNo":"32183543","name":"PRIYA KUMARI","gender":"Female","mathsStd":35.0,"science":60.0,"eng":73.0,"mathsBasic":null},{"rollNo":"32183335","name":"AYUSH SINGH","gender":"Male","mathsStd":null,"science":51.0,"eng":68.0,"mathsBasic":64.0},{"rollNo":"32183216","name":"AYUSH SINGH","gender":"Male","mathsStd":35.0,"science":60.0,"eng":73.0,"mathsBasic":null},{"rollNo":"32183485","name":"AFREEN","gender":"Female","mathsStd":39.0,"science":54.0,"eng":70.0,"mathsBasic":null},{"rollNo":"32183490","name":"ARIF","gender":"Male","mathsStd":34.0,"science":52.0,"eng":74.0,"mathsBasic":null},{"rollNo":"32183549","name":"RUDRA PRATAP SINGH","gender":"Male","mathsStd":null,"science":44.0,"eng":78.0,"mathsBasic":30.0},{"rollNo":"32183245","name":"YACHNA SINGH","gender":"Female","mathsStd":null,"science":50.0,"eng":79.0,"mathsBasic":39.0},{"rollNo":"32183418","name":"ANSH YADAV","gender":"Male","mathsStd":null,"science":44.0,"eng":76.0,"mathsBasic":37.0},{"rollNo":"32183313","name":"REDHEM BAHADUR CHHETRI","gender":"Male","mathsStd":null,"science":40.0,"eng":77.0,"mathsBasic":41.0},{"rollNo":"32183546","name":"RANJEET KUMAR","gender":"Male","mathsStd":null,"science":43.0,"eng":78.0,"mathsBasic":34.0},{"rollNo":"32183219","name":"DEEPIKA SINGH","gender":"Female","mathsStd":null,"science":52.0,"eng":78.0,"mathsBasic":42.0},{"rollNo":"32183342","name":"KUSHANG KUMAR","gender":"Male","mathsStd":null,"science":46.0,"eng":77.0,"mathsBasic":37.0},{"rollNo":"32183208","name":"ABHINAV DEEP SINGH","gender":"Male","mathsStd":34.0,"science":42.0,"eng":73.0,"mathsBasic":null},{"rollNo":"32183593","name":"UJJWAL SINGH","gender":"Male","mathsStd":45.0,"science":53.0,"eng":75.0,"mathsBasic":null},{"rollNo":"32183262","name":"AYUSH SINGH","gender":"Male","mathsStd":48.0,"science":48.0,"eng":71.0,"mathsBasic":null},{"rollNo":"32183439","name":"SHRESHTH PANT","gender":"Male","mathsStd":null,"science":47.0,"eng":66.0,"mathsBasic":36.0},{"rollNo":"32183328","name":"AHEIBAM PARAS MEETEI","gender":"Male","mathsStd":null,"science":49.0,"eng":65.0,"mathsBasic":49.0},{"rollNo":"32183247","name":"YASH NEGI","gender":"Male","mathsStd":null,"science":47.0,"eng":69.0,"mathsBasic":61.0},{"rollNo":"32183578","name":"OM YADAV","gender":"Male","mathsStd":43.0,"science":40.0,"eng":77.0,"mathsBasic":null},{"rollNo":"32183473","name":"SHREYA SHUKLA","gender":"Female","mathsStd":null,"science":38.0,"eng":71.0,"mathsBasic":40.0},{"rollNo":"32183482","name":"ABHAY OJHA","gender":"Male","mathsStd":43.0,"science":35.0,"eng":72.0,"mathsBasic":null},{"rollNo":"32183410","name":"ABBU SHAHID SHAH","gender":"Male","mathsStd":null,"science":42.0,"eng":75.0,"mathsBasic":38.0},{"rollNo":"32183263","name":"BARIRAH KHATUN","gender":"Female","mathsStd":null,"science":34.0,"eng":75.0,"mathsBasic":39.0},{"rollNo":"32183341","name":"KUMARI KHUSHI","gender":"Female","mathsStd":null,"science":38.0,"eng":76.0,"mathsBasic":35.0},{"rollNo":"32183338","name":"DIVYANSHU SINGH","gender":"Male","mathsStd":37.0,"science":34.0,"eng":66.0,"mathsBasic":null},{"rollNo":"32183349","name":"PRATIK SINGH","gender":"Male","mathsStd":34.0,"science":40.0,"eng":62.0,"mathsBasic":null},{"rollNo":"32183220","name":"DIVYA BHANDARI","gender":"Female","mathsStd":null,"science":45.0,"eng":62.0,"mathsBasic":33.0},{"rollNo":"32183351","name":"RISHABH KUMAR","gender":"Male","mathsStd":33.0,"science":44.0,"eng":77.0,"mathsBasic":null},{"rollNo":"32183365","name":"ADARSH SINGH","gender":"Male","mathsStd":null,"science":50.0,"eng":62.0,"mathsBasic":47.0},{"rollNo":"32183352","name":"RITURAJ","gender":"Male","mathsStd":null,"science":48.0,"eng":66.0,"mathsBasic":49.0},{"rollNo":"32183441","name":"TRIVENI BISHT","gender":"Female","mathsStd":null,"science":44.0,"eng":78.0,"mathsBasic":40.0},{"rollNo":"32183522","name":"ANSHIKA RANA","gender":"Female","mathsStd":47.0,"science":37.0,"eng":73.0,"mathsBasic":null},{"rollNo":"32183277","name":"PRAGYA","gender":"Female","mathsStd":36.0,"science":41.0,"eng":71.0,"mathsBasic":null},{"rollNo":"32183230","name":"NAYAN DWIVEDI","gender":"Male","mathsStd":41.0,"science":42.0,"eng":71.0,"mathsBasic":null},{"rollNo":"32183285","name":"SHREYA SINGH","gender":"Female","mathsStd":null,"science":35.0,"eng":61.0,"mathsBasic":51.0},{"rollNo":"32183608","name":"ANIKET KUMAR","gender":"Male","mathsStd":null,"science":35.0,"eng":71.0,"mathsBasic":27.0},{"rollNo":"32183465","name":"PRABHAT YADAV","gender":"Male","mathsStd":null,"science":33.0,"eng":79.0,"mathsBasic":30.0},{"rollNo":"32183279","name":"PRATYUSH KUMAR SINGH","gender":"Male","mathsStd":null,"science":44.0,"eng":53.0,"mathsBasic":59.0},{"rollNo":"32183478","name":"VAIBHAV VERMA","gender":"Male","mathsStd":null,"science":45.0,"eng":69.0,"mathsBasic":30.0},{"rollNo":"32183556","name":"VIKRANT GUPTA","gender":"Male","mathsStd":41.0,"science":38.0,"eng":52.0,"mathsBasic":null},{"rollNo":"32183336","name":"BAJRANGI PANDEY","gender":"Male","mathsStd":40.0,"science":38.0,"eng":54.0,"mathsBasic":null},{"rollNo":"32183603","name":"SAKSHI GUPTA","gender":"Female","mathsStd":null,"science":36.0,"eng":60.0,"mathsBasic":35.0},{"rollNo":"32183421","name":"AVIRAL","gender":"Male","mathsStd":null,"science":40.0,"eng":71.0,"mathsBasic":31.0},{"rollNo":"32183280","name":"RAVI","gender":"Male","mathsStd":null,"science":46.0,"eng":46.0,"mathsBasic":47.0},{"rollNo":"32183330","name":"AKSHAT SINGH","gender":"Male","mathsStd":40.0,"science":40.0,"eng":65.0,"mathsBasic":null},{"rollNo":"32183224","name":"ISHAN TIWARI","gender":"Male","mathsStd":34.0,"science":38.0,"eng":65.0,"mathsBasic":null},{"rollNo":"32183368","name":"ALEKH KUMAR","gender":"Male","mathsStd":null,"science":37.0,"eng":64.0,"mathsBasic":35.0},{"rollNo":"32183292","name":"AMIZA WALI KHAN","gender":"Female","mathsStd":null,"science":44.0,"eng":59.0,"mathsBasic":37.0},{"rollNo":"32183346","name":"PANKAJ KUMAR OJHA","gender":"Male","mathsStd":null,"science":37.0,"eng":53.0,"mathsBasic":54.0},{"rollNo":"32183570","name":"ISHIKA PATHAK","gender":"Female","mathsStd":29.0,"science":47.0,"eng":54.0,"mathsBasic":null},{"rollNo":"32183379","name":"ARYAN SINGH","gender":"Male","mathsStd":null,"science":31.0,"eng":55.0,"mathsBasic":36.0},{"rollNo":"32183282","name":"SHAURYA SINGH","gender":"Male","mathsStd":null,"science":29.0,"eng":50.0,"mathsBasic":44.0},{"rollNo":"32183433","name":"RANBIR","gender":"Male","mathsStd":null,"science":40.0,"eng":48.0,"mathsBasic":34.0},{"rollNo":"32183404","name":"VEDANSH","gender":"Male","mathsStd":null,"science":35.0,"eng":60.0,"mathsBasic":29.0},{"rollNo":"32183573","name":"SOUMAYA PANDEY","gender":"Female","mathsStd":null,"science":21.0,"eng":55.0,"mathsBasic":27.0},{"rollNo":"32183250","name":"ADITYA CHAUHAN","gender":"Male","mathsStd":null,"science":null,"eng":null,"mathsBasic":null}];
+
+const lookup = () => {
+  const raw = document.getElementById('rollInput').value.trim();
+  const errEl = document.getElementById('errorMsg');
+  errEl.style.display = 'none';
+
+  if (!raw) { showError('Please enter your Roll Number.'); return; }
+
+  const student = STUDENTS.find(s => s.rollNo === raw);
+  if (!student || !student.name) { showError(`Roll Number ${raw} not found. Please check and try again.`); return; }
+
+  renderResult(student);
+};
+
+const showError = msg => {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('resultPanel').style.display = 'none';
+};
+
+// Colors per subject
+const subjectColors = {
+  mathsStd:  '#2563eb',
+  mathsBasic:'#7c3aed',
+  science:   '#16a34a',
+  eng:       '#db2777',
+};
+
+const renderResult = s => {
+  document.getElementById('resName').textContent = s.name;
+  document.getElementById('resRoll').textContent = 'Roll No: ' + s.rollNo;
+  document.getElementById('resGender').textContent = (s.gender === 'Male' ? '♂ Male' : '♀ Female');
+
+  // MARKS
+  const grid = document.getElementById('marksGrid');
+  grid.innerHTML = '';
+  const subjects = [
+    { key: 'science', label: 'Science' },
+    { key: 'mathsStd', label: 'Maths Std' },
+    { key: 'mathsBasic', label: 'Maths Basic' },
+    { key: 'eng', label: 'English' },
+  ];
+  subjects.forEach(sub => {
+    const val = s[sub.key];
+    const isNA = val === null || val === undefined;
+    const box = document.createElement('div');
+    box.className = 'mark-box ' + (isNA ? 'na-box' : val >= 33 ? 'pass' : 'fail');
+    const pct = isNA ? 0 : Math.round(val);
+    const color = isNA ? '#ddd' : subjectColors[sub.key] || '#333';
+    box.innerHTML = `
+      <div class="mark-subject">${sub.label}</div>
+      <div class="mark-score ${isNA ? 'na' : ''}" style="color:${isNA?'#ccc':color}">${isNA ? 'N/A' : pct}</div>
+      <div class="mark-bar"><div class="mark-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+    `;
+    grid.appendChild(box);
+  });
+
+  // STREAM LOGIC
+  const { eligibleStreams, allotted } = computeStreams(s);
+
+  // Allotted
+  const streamMeta = {
+    PCM:  { cls:'s-pcm',  icon:'⚗️', desc:'Physics · Chemistry · Mathematics' },
+    PCB:  { cls:'s-pcb',  icon:'🌿', desc:'Physics · Chemistry · Biology' },
+    'Commerce with Maths':  { cls:'s-cwm',  icon:'📈', desc:'Commerce stream with Mathematics' },
+    'Commerce without Maths': { cls:'s-cwom', icon:'💼', desc:'Commerce stream without Mathematics' },
+    Humanities: { cls:'s-hum', icon:'📚', desc:'Arts & Humanities stream — open to all' },
+    'Not Eligible': { cls:'s-none', icon:'⚠️', desc:'Does not meet minimum criteria for any science/commerce stream' },
+  };
+  const meta = streamMeta[allotted] || streamMeta['Not Eligible'];
+  const card = document.getElementById('allottedCard');
+  card.className = 'allotted-stream-card ' + meta.cls;
+  document.getElementById('allottedIcon').textContent = meta.icon;
+  document.getElementById('allottedName').textContent = allotted;
+  document.getElementById('allottedDesc').textContent = meta.desc;
+
+  // Note
+  const noteEl = document.getElementById('notEligNote');
+  if (allotted === 'Humanities') {
+    noteEl.style.display = 'block';
+    noteEl.textContent = 'This student is eligible for Humanities stream. Humanities has no minimum mark restriction and is open to all students.';
+  } else { noteEl.style.display = 'none'; }
+
+  // Eligible streams
+  const eligGrid = document.getElementById('eligGrid');
+  eligGrid.innerHTML = '';
+  const tagMeta = {
+    PCM: { cls:'t-pcm', icon:'⚗️' },
+    PCB: { cls:'t-pcb', icon:'🌿' },
+    'Commerce with Maths': { cls:'t-cwm', icon:'📈' },
+    'Commerce without Maths': { cls:'t-cwom', icon:'💼' },
+    Humanities: { cls:'t-hum', icon:'📚' },
+  };
+  if (eligibleStreams.length === 0) {
+    eligGrid.innerHTML = '<span style="color:#999;font-size:13px;">No streams meet minimum criteria based on scored marks.</span>';
+  } else {
+    eligibleStreams.forEach(st => {
+      const tm = tagMeta[st];
+      const tag = document.createElement('div');
+      tag.className = 'elig-tag ' + tm.cls;
+      tag.innerHTML = `<span class="tag-icon">${tm.icon}</span>${st}`;
+      eligGrid.appendChild(tag);
+    });
+  }
+
+  document.getElementById('resultPanel').style.display = 'block';
+  document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+const computeStreams = s => {
+  const sci = s.science;
+  const ms  = s.mathsStd;   // Maths Standard
+  const mb  = s.mathsBasic; // Maths Basic
+  const eng = s.eng;
+
+  const eligible = [];
+
+  // PCM: Science ≥71, Maths Std ≥71, Eng ≥51
+  const pcmOk = sci >= 71 && ms >= 71 && eng >= 51;
+  if (pcmOk) eligible.push('PCM');
+
+  // PCB: Science ≥61, Maths Basic ≥71, Eng ≥51
+  const pcbOk = sci >= 61 && mb >= 71 && eng >= 51;
+  if (pcbOk) eligible.push('PCB');
+
+  // Commerce with Maths: Maths Std ≥71, Eng ≥51 (NA for science)
+  const cwmOk = ms >= 71 && eng >= 51;
+  if (cwmOk && !eligible.includes('Commerce with Maths')) eligible.push('Commerce with Maths');
+
+  // Commerce without Maths: Maths Std ≥51 OR Maths Basic ≥61, Eng ≥51
+  const cwomOk = eng >= 51 && ((ms !== null && ms >= 51) || (mb !== null && mb >= 61));
+  if (cwomOk) eligible.push('Commerce without Maths');
+
+  // Humanities: always
+  eligible.push('Humanities');
+
+  // Determine allotted (highest priority eligible)
+  // Priority: PCM > PCB > Commerce with Maths > Commerce without Maths > Humanities
+  let allotted = 'Humanities'; // default
+  if (pcmOk) allotted = 'PCM';
+  else if (pcbOk) allotted = 'PCB';
+  else if (cwmOk) allotted = 'Commerce with Maths';
+  else if (cwomOk) allotted = 'Commerce without Maths';
+  else allotted = 'Humanities';
+
+  return { eligibleStreams: eligible, allotted };
+};
+
+// Allow Enter key
+document.getElementById('rollInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') lookup();
+});
+</script>
+</body>
+</html>
