@@ -17,7 +17,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-html_file = os.path.join(os.path.dirname(__file__), "stream_tool.html")
+html_file = os.path.join(os.path.dirname(__file__), "stream_allotment.html")
 
 with open(html_file, "r", encoding="utf-8") as f:
     html_content = f.read()
